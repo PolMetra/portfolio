@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wieża Portfolio</title>
+  <meta name="description" content="Interaktywne portfolio 3D — przywołaj wieżę czarodzieja błyskawicą.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="crt" aria-hidden="true"></div>
+
+  <!-- NAPIS TYTUŁOWY -->
+  <header id="title" aria-live="polite">
+    <pre class="title-logo" aria-label="Portfolio"></pre>
+    <div class="title-name"></div>
+    <div class="title-role"></div>
+  </header>
+
+  <!-- HUD -->
+  <button id="skip" class="hud hud-left">[ ESC ] POMIŃ INTRO</button>
+  <button id="mute" class="hud hud-right">[ ♪ WŁ ]</button>
+  <button id="call" class="hud hud-call">[ ✦ WEZWIJ CZARODZIEJA ]</button>
+
+  <!-- OKNO DIALOGOWE Z CZARODZIEJEM -->
+  <section id="dialog" role="dialog" aria-label="Czarodziej">
+    <div class="wiz">
+      <div class="wiz-screen"><pre class="wiz-art" aria-hidden="true"></pre></div>
+      <div class="wiz-name"></div>
+    </div>
+    <div class="dlg-body">
+      <p class="dlg-text"></p>
+      <div class="dlg-extra"></div>
+      <div class="dlg-choices"></div>
+      <div class="dlg-next">▼</div>
+    </div>
+  </section>
+
+  <!-- EKRAN STARTOWY -->
+  <div id="boot">
+    <pre class="boot-log"></pre>
+    <div class="boot-start">— NACIŚNIJ START —<small>kliknij lub wciśnij ENTER · dźwięk włączony</small></div>
+  </div>
+
+  <noscript><p style="color:#c9a0ff;font-family:monospace;padding:2rem">Ta strona potrzebuje JavaScriptu i WebGL.</p></noscript>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

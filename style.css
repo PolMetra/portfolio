@@ -1,0 +1,156 @@
+:root {
+  --ph: #c9a0ff;          /* fosfor */
+  --ph-dim: #7d5bb8;
+  --ph-glow: rgba(170, 90, 255, 0.55);
+  --amber: #ffcf7a;
+  --bg: #07040f;
+  --panel: rgba(9, 5, 20, 0.92);
+  --font: 'VT323', ui-monospace, 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+body { font-family: var(--font); color: var(--ph); -webkit-font-smoothing: none; user-select: none; -webkit-user-select: none; }
+
+/* ---------- SCENA: niska rozdzielczość rozciągnięta "pikselowo" ---------- */
+#stage canvas {
+  position: fixed; inset: 0;
+  width: 100vw !important; height: 100vh !important;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  cursor: crosshair; touch-action: none;
+}
+
+/* ---------- nakładka CRT ---------- */
+#crt {
+  position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.22) 2px 3px),
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%);
+  mix-blend-mode: multiply;
+}
+
+/* ---------- HUD ---------- */
+.hud {
+  position: fixed; z-index: 40; background: none; border: none; cursor: pointer;
+  font-family: var(--font); font-size: 20px; color: var(--ph-dim); letter-spacing: 0.08em;
+  text-shadow: 0 0 6px var(--ph-glow); padding: 10px 14px;
+  opacity: 0; pointer-events: none; transition: opacity .6s, color .2s;
+}
+.hud:hover, .hud:focus-visible { color: var(--ph); outline: none; }
+.hud.show, #mute { opacity: 1; pointer-events: auto; }
+.hud.hide { opacity: 0 !important; pointer-events: none !important; }
+.hud-left { top: 6px; left: 8px; }
+.hud-right { top: 6px; right: 8px; }
+.hud-call { bottom: 14px; right: 12px; font-size: 22px; color: var(--ph); }
+.hud-call.show { animation: pulse 2.4s infinite; }
+@keyframes pulse { 50% { opacity: .55; } }
+
+/* ---------- TYTUŁ ---------- */
+#title {
+  position: fixed; z-index: 20; top: 3vh; left: 0; right: 0;
+  display: flex; flex-direction: column; align-items: center; pointer-events: none;
+  opacity: 0; transition: opacity 1s;
+}
+#title.show { opacity: 1; }
+.title-logo {
+  margin: 0; font-family: ui-monospace, 'Courier New', monospace; font-weight: 700;
+  font-size: clamp(5px, 1.25vw, 14px); line-height: 1.0; letter-spacing: 0;
+  color: #e6d2ff;
+  text-shadow: 0 0 4px #b070ff, 0 0 14px #7a2cff, 3px 3px 0 #2a0f55;
+}
+.title-name {
+  margin-top: 0.7em; min-height: 1em;
+  font-size: clamp(20px, 2.9vw, 38px); letter-spacing: 0.35em; padding-left: 0.35em;
+  color: var(--amber); text-shadow: 0 0 8px rgba(255, 180, 80, 0.7), 2px 2px 0 #3a1a00;
+}
+.title-role {
+  margin-top: .2em; min-height: 1em;
+  font-size: clamp(16px, 1.8vw, 24px); letter-spacing: 0.5em; padding-left: 0.5em;
+  color: var(--ph); text-shadow: 0 0 6px var(--ph-glow);
+}
+
+/* ---------- OKNO DIALOGOWE ---------- */
+#dialog {
+  position: fixed; z-index: 30; left: 50%; bottom: 1.5vh;
+  width: min(780px, calc(100vw - 24px));
+  transform: translate(-50%, 30px); opacity: 0; pointer-events: none;
+  transition: opacity .35s, transform .35s steps(6);
+  display: flex; gap: 14px; padding: 12px;
+  background: var(--panel);
+  border: 2px solid var(--ph-dim);
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px #3b2468, 0 0 30px rgba(120, 50, 255, 0.35), inset 0 0 24px rgba(120, 60, 255, 0.18);
+  cursor: pointer;
+}
+#dialog.open { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+
+.wiz { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; }
+.wiz-screen {
+  position: relative; padding: 8px 10px 6px;
+  background: radial-gradient(ellipse at center, #1a0d33 0%, #090414 85%);
+  border: 2px solid #4a2d80; border-radius: 14px / 10px;
+  box-shadow: inset 0 0 18px rgba(160, 90, 255, 0.35), 0 0 0 3px #120a22;
+  overflow: hidden;
+}
+.wiz-screen::after { /* linie i odblask kineskopu */
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,.35) 2px 3px),
+    linear-gradient(160deg, rgba(255,255,255,.08), transparent 40%);
+  animation: flicker 0.15s infinite steps(2);
+}
+@keyframes flicker { 50% { opacity: .85; } }
+.wiz-art {
+  margin: 0; font-family: ui-monospace, 'Courier New', monospace;
+  font-size: 8.5px; line-height: 1.05; color: var(--ph);
+  text-shadow: 0 0 5px var(--ph-glow);
+}
+.wiz-name {
+  margin-top: 6px; font-size: 20px; letter-spacing: .25em; color: var(--amber);
+  text-shadow: 0 0 6px rgba(255, 180, 80, .6);
+}
+
+.dlg-body { position: relative; flex: 1; display: flex; flex-direction: column; min-width: 0; padding: 4px 4px 18px; }
+.dlg-text { margin: 0; font-size: 25px; line-height: 1.12; color: #eadcff; text-shadow: 0 0 6px var(--ph-glow); min-height: 2.3em; }
+.dlg-extra { font-size: 22px; color: var(--amber); margin-top: 8px; white-space: pre; text-shadow: 0 0 6px rgba(255,180,80,.5); }
+.dlg-extra:empty { display: none; }
+.dlg-choices { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 8px; }
+.dlg-choice {
+  background: none; border: none; cursor: pointer; padding: 2px 6px;
+  font-family: var(--font); font-size: 24px; color: var(--ph-dim); text-align: left;
+}
+.dlg-choice.sel { color: var(--amber); background: rgba(255, 190, 90, .08); text-shadow: 0 0 6px rgba(255,180,80,.7); }
+.dlg-next { position: absolute; right: 6px; bottom: 0; font-size: 22px; color: var(--amber); animation: bob .6s infinite steps(2); }
+@keyframes bob { 50% { transform: translateY(3px); } }
+
+/* ---------- EKRAN STARTOWY ---------- */
+#boot {
+  position: fixed; inset: 0; z-index: 45; background: #000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px;
+  cursor: pointer; transition: opacity .8s;
+}
+#boot.gone { opacity: 0; pointer-events: none; }
+.boot-log { margin: 0; min-width: 330px; min-height: 8em; font-family: var(--font); font-size: 22px; color: var(--ph-dim); text-shadow: 0 0 6px var(--ph-glow); }
+.boot-start { opacity: 0; font-size: 34px; letter-spacing: .2em; color: var(--ph); text-shadow: 0 0 10px var(--ph-glow); text-align: center; }
+.boot-start small { display: block; margin-top: 10px; font-size: 18px; letter-spacing: .1em; color: var(--ph-dim); }
+#boot.ready .boot-start { opacity: 1; animation: blink 1.1s infinite steps(2); }
+@keyframes blink { 50% { color: transparent; text-shadow: none; } }
+#boot.ready .boot-start small { animation: none; }
+
+/* ---------- TELEFON ---------- */
+@media (max-width: 640px) {
+  #dialog { gap: 8px; padding: 8px; bottom: 8px; }
+  .wiz-art { font-size: 5.6px; }
+  .wiz-name { font-size: 15px; }
+  .dlg-text { font-size: 20px; min-height: 4.4em; }
+  .dlg-extra { font-size: 16px; }
+  .dlg-choice { font-size: 20px; }
+  .hud { font-size: 16px; }
+  #title { top: 9vh; }
+  .boot-log { min-width: 0; font-size: 15px; }
+  .boot-start { font-size: 24px; padding: 0 16px; }
+  .boot-start small { font-size: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wiz-screen::after, .hud-call, .dlg-next { animation: none; }
+}
