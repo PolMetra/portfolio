@@ -56,6 +56,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 body.live .hud-txt { opacity: 1; }
 #hud-stats { top: 18px; left: 20px; }
+/* dane burzy (lewy górny róg) i dziennik (prawy górny róg) — na razie ukryte */
+#hud-stats, #hud-log { display: none !important; }
 #hud-log { top: 18px; right: 20px; text-align: right; margin-top: 30px; white-space: pre; }
 #hud-foot { right: 20px; bottom: 16px; display: flex; gap: 28px; }
 #hud-btns { position: fixed; z-index: 40; top: 14px; right: 16px; display: flex; gap: 18px; }

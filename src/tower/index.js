@@ -23,6 +23,7 @@ export class Tower {
 
     this.room = buildRoom();
     this.scene = this.room.scene;
+    this.scene.traverse((o) => { if (o.isLight) o.layers.enable(1); });
     this.camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.3, 200);
     addEventListener('resize', () => { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); });
 
@@ -208,6 +209,7 @@ export class Tower {
     document.body.classList.remove('no-cursor');
     this.tip.classList.remove('show');
     this.viewing = false;
+    this.opus = false;
     this.trueGoal = 0;
     this.holderGoal = { y: this.room.BALL_Y, s: 1.45 };
   }
@@ -316,7 +318,8 @@ export class Tower {
     const range = this.panel.body.querySelector('.tm-range');
     if (range) range.value = s;
     this.panel.body.querySelectorAll('[data-s]').forEach((el) => el.classList.toggle('on', +el.dataset.s === s));
-    this.trueGoal = s === 2 ? 1 : 0;
+    this.trueGoal = 0; // tło zostaje w druku kobaltowym
+    this.opus = s === 2; // dzieło rysowane w prawdziwych kolorach jako nakładka (renderOverlay)
     if (silent) return;
     this.audio.blip(1 + s * 0.4);
     this.flash = Math.max(this.flash, 0.4);
@@ -333,6 +336,7 @@ export class Tower {
 
   backToBall() {
     this.viewing = false;
+    this.opus = false;
     this.trueGoal = 0;
     this.holderGoal = { y: this.room.BALL_Y, s: 1.45 };
     this.visio();
@@ -508,6 +512,20 @@ export class Tower {
     });
   }
 
+  // Gotowe dzieło (etap III): po wyrenderowaniu całej sceny w druku kobaltowym
+  // dorysowujemy na wierzch sam model (warstwa 1) w prawdziwych kolorach.
+  renderOverlay() {
+    if (!this.active || !this.viewing || !this.opus) return;
+    const r = this.renderer, cam = this.camera;
+    r.setRenderTarget(null);
+    r.autoClear = false;
+    r.clearDepth();
+    cam.layers.set(1);
+    r.render(this.scene, cam);
+    cam.layers.set(0);
+    r.autoClear = true;
+  }
+
   // ============================================================
   //  PĘTLA
   // ============================================================
@@ -574,7 +592,7 @@ export class Tower {
     R.showLight.intensity += ((this.viewing ? 3.2 : this.mode === 'ball' ? 2.0 : 0) - R.showLight.intensity) * k;
     R.showRim.intensity += ((this.viewing ? 2.0 : 0) - R.showRim.intensity) * k;
     // tło wizji: pełne przy drucie i glinie, lżejsze przy gotowym dziele (widać komnatę w barwach)
-    const voidGoal = this.viewing ? (this.trueGoal ? 0.75 : 0.985) : 0;
+    const voidGoal = this.viewing ? 0.985 : 0;
     R.voidMat.opacity += (voidGoal - R.voidMat.opacity) * (1 - Math.exp(-dt * 4));
     // kula oddaje dzieło i chowa się, żeby nie zasłaniać jego podstawy
     R.ball.visible = !this.viewing;

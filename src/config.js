@@ -3,7 +3,7 @@
 // ============================================================
 export const CONFIG = {
   // Twoje dane (pojawią się pod napisem PORTFOLIO)
-  name: 'IMIĘ NAZWISKO',
+  name: 'Artur Jędrzejczyk',
   role: '3D ARTIST',
   artstation: 'https://www.artstation.com/',
 
@@ -60,7 +60,7 @@ export const CONFIG = {
       year: 2024,
       genre: 'Hard Surface',
       tools: ['Blender', 'Substance Painter', 'Photoshop'],
-      desc: 'Mosiężna latarnia okrętowa. Ćwiczenie z hard-surface i szkła; wersja do gry 6k trójkątów.',
+      desc: 'Mosiężna latarnia okrętowa. Ćwiczenie z hard-surface i szkła. Wersja do gry ma 6k trójkątów.',
       model: null, placeholder: 'lantern', images: [], link: '',
     },
   ],

@@ -492,6 +492,7 @@ function tick() {
     dialog.update(dt);
     hud.update(dt, { charge: 1, wave: 0, flash: tower.flash });
     post.composer.render(dt);
+    tower.renderOverlay();
     return;
   }
 

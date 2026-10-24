@@ -115,6 +115,7 @@ export class ProjectModel {
       m.add(w);
       m.userData.wire = w;
     }
+    obj.traverse((o) => o.layers.enable(1)); // warstwa 1 = nakładka z prawdziwymi kolorami
     this.root.add(obj);
     this.setStage(this.stage);
   }
