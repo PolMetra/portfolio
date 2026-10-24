@@ -365,7 +365,8 @@ export class Tower {
     }
     const r = replay ? await this.dialog.say([{ text: 'Dobrze, wypuszczam zwoje z powrotem. MULTIPLICATIO!', mood: 'cast' }]) : await this.dialog.say([
       { text: 'Zwoje z wiedzą mistrza są płochliwe — uciekają przed każdą ręką.', mood: 'idle' },
-      { text: 'Rzucę na ciebie Multiplicatio. Twoja ręka się rozmnoży… ale zwoje boją się tylko tej prawdziwej. Łap je klonami!', mood: 'cast' },
+      { text: 'Rzucę na ciebie Multiplicatio. Każde kliknięcie stworzy kopię twojej ręki w innym polu. Kopia powtarza twoje ruchy, z lekkim opóźnieniem.', mood: 'cast' },
+      { text: 'Zwoje uciekają przed prawdziwą ręką. Złapiesz je tylko kopią, przytrzymując ją nad zwojem przez chwilę. Kopie słabną i znikają, więc klikaj z głową.', mood: 'point' },
     ]);
     if (r === CANCEL || this.mode !== 'multi') return;
     this.audio.thunder(0.5);
@@ -373,7 +374,7 @@ export class Tower {
     document.body.classList.add('no-cursor');
     this.replay = replay;
     this.game.start(replay ? new Set() : this.caught);
-    this.dialog.line({ text: 'MULTIPLICATIO! Prowadź prawdziwy kursor tak, by klony zagoniły zwoje.', hold: true, mood: 'cast' });
+    this.dialog.line({ text: 'MULTIPLICATIO! Kliknij, by rozmnożyć kursor, i przytrzymaj kopię nad zwojem.', hold: true, mood: 'cast' });
   }
 
   onScroll(i) {
@@ -436,6 +437,8 @@ export class Tower {
     const idx = this.config.about.findIndex((a) => a.item === obj.userData.name);
     if (idx < 0 || this.revealed.has(idx)) return;
     this.revealed.add(idx); this.save();
+    obj.userData.burst = 1; // rozbłysk
+    this.flash = Math.max(this.flash, 0.25);
     this.audio.blip(1.9);
     this.hud.log(`LEVITATIO: ${obj.userData.name}`);
     this.refreshAbout();
@@ -545,9 +548,13 @@ export class Tower {
     r.setRenderTarget(null);
     r.autoClear = false;
     r.clearDepth();
+    // bez tła sceny — inaczej nakładka zamalowałaby komnatę jednolitym kolorem
+    const bg = this.scene.background;
+    this.scene.background = null;
     cam.layers.set(1);
-    r.render(this.scene, cam);
+    this.models[this.current].withTrueColors(() => r.render(this.scene, cam));
     cam.layers.set(0);
+    this.scene.background = bg;
     r.autoClear = true;
   }
 
@@ -608,12 +615,24 @@ export class Tower {
       const lifted = this.hold && this.hold.obj === o;
       o.userData.lift += ((lifted ? 1 : 0) - o.userData.lift) * (1 - Math.exp(-dt * (lifted ? 3 : 2)));
       const L = o.userData.lift;
-      o.position.y = o.userData.baseY + L * 2.6 + L * Math.sin(t * 2 + i) * 0.15;
+      // drżenie tuż przed odsłonięciem ukrytej informacji (rośnie z czasem trzymania)
+      const idx = this.config.about.findIndex((a) => a.item === o.userData.name);
+      const hidden = idx >= 0 && !this.revealed.has(idx);
+      const tremble = lifted && hidden ? Math.min(1, Math.max(0, (this.hold.t - 0.25) / 0.55)) : 0;
+      const b = o.userData.burst || 0;
+      const shake = tremble * 0.12 + b * 0.18;
+      o.userData.burst = Math.max(0, b - dt * 1.6);
+      o.position.y = o.userData.baseY + L * 2.6 + L * Math.sin(t * 2 + i) * 0.15 + (Math.random() - 0.5) * shake;
+      o.position.x = o.userData.baseX + (Math.random() - 0.5) * shake;
       o.rotation.y = L * Math.sin(t * 0.9 + i) * 1.2;
-      o.rotation.z = L * Math.sin(t * 1.3 + i) * 0.15;
+      o.rotation.z = L * Math.sin(t * 1.3 + i) * 0.15 + (Math.random() - 0.5) * shake;
+      // rozjaśnienie przy unoszeniu + rozbłysk przy odsłonięciu
+      const glow = L * 0.35 + tremble * 0.25 + b * 0.7;
+      o.traverse((m) => { if (m.isMesh && m.material.emissive) m.material.emissive.setRGB(glow * 0.8, glow * 0.85, glow); });
       if (lifted) { haloOn = true; o.getWorldPosition(R.itemHalo.position); }
     });
-    R.itemHalo.intensity += ((haloOn ? 3 : 0) - R.itemHalo.intensity) * 0.1;
+    const burst = Math.max(...R.items.map((o) => o.userData.burst || 0));
+    R.itemHalo.intensity += ((haloOn ? 4 : 0) + burst * 6 - R.itemHalo.intensity) * 0.15;
     R.showLight.intensity += ((this.viewing ? 3.2 : this.mode === 'ball' ? 2.0 : 0) - R.showLight.intensity) * k;
     R.showRim.intensity += ((this.viewing ? 2.0 : 0) - R.showRim.intensity) * k;
     // tło wizji: pełne przy drucie i glinie, lżejsze przy gotowym dziele (widać komnatę w barwach)

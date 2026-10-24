@@ -121,11 +121,20 @@ export class ProjectModel {
   }
 
   // 0 drut, 1 glina, 2 dzieło
+  // 0 drut, 1 glina, 2 dzieło.
+  // Na etapie 2 w głównym (kobaltowym) przebiegu zostaje glina — daje tę samą poświatę
+  // i tło co etap 2 — a prawdziwe kolory dorysowuje nakładka (withTrueColors).
   setStage(s) {
     this.stage = s;
     for (const m of this.meshes) {
-      m.material = s === 0 ? shadowMat : s === 1 ? clayMat : m.userData.orig;
+      m.material = s === 0 ? shadowMat : clayMat;
       m.userData.wire.visible = s === 0;
     }
+  }
+
+  withTrueColors(fn) {
+    for (const m of this.meshes) m.material = m.userData.orig;
+    fn();
+    this.setStage(this.stage);
   }
 }

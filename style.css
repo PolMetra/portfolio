@@ -338,11 +338,22 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
 /* Multiplicatio */
 #game { position: fixed; inset: 0; z-index: 34; pointer-events: none; opacity: 0; transition: opacity .4s; }
 #game.on { opacity: 1; }
-.clone, .scroll { position: absolute; left: 0; top: 0; will-change: transform; white-space: nowrap; }
-.clone { font-size: 26px; line-height: 1; margin: -13px 0 0 -9px; color: var(--bone); text-shadow: 0 0 6px rgba(236,229,211,.6); }
-.clone.real { color: var(--sky); text-shadow: none; }
-.scroll { font-size: 20px; margin: -12px 0 0 -18px; color: var(--bone); background: var(--deep); padding: 2px 4px; border: 1px solid var(--bone-dim); }
-.scroll.caught { animation: caught .7s forwards; }
+.w98, .scroll { position: absolute; left: 0; top: 0; will-change: transform; white-space: nowrap; }
+.w98 svg { display: block; image-rendering: pixelated; }
+.w98.real { z-index: 3; }
+.w98.clone { z-index: 2; filter: drop-shadow(0 0 4px rgba(236, 229, 211, .7)); transition: opacity .2s; }
+.w98 em { position: absolute; left: 16px; top: 20px; font-style: normal; font-size: 10px; letter-spacing: .1em; color: var(--bone); }
+.seg { position: absolute; border: 1px dashed rgba(236, 229, 211, .14); pointer-events: none; transition: background .3s, border-color .3s; }
+.seg span { position: absolute; left: 8px; top: 6px; font-family: 'Fell', serif; font-size: 13px; letter-spacing: .2em; color: var(--bone-faint); }
+.seg.here { border-color: rgba(236, 229, 211, .3); }
+.seg.used { background: rgba(236, 229, 211, .035); }
+.seg.used span { color: var(--bone-dim); }
+.seg.pulse { animation: segpulse .5s; }
+@keyframes segpulse { from { background: rgba(236, 229, 211, .2); } }
+.scroll { margin: -14px 0 0 -22px; font-size: 20px; color: var(--bone); background: var(--deep); padding: 2px 5px 4px; border: 1px solid var(--bone-dim); }
+.scroll b { font-weight: 400; }
+.scroll i { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--bone); }
+.scroll.held { background: var(--cobalt); border-color: var(--bone); }
 @keyframes caught { to { opacity: 0; transform: scale(2.4); } }
 
 /* Evocatio — kruk ASCII */

@@ -150,7 +150,9 @@ export function buildRoom() {
   const items = [];
   const addItem = (name, obj, x, z) => {
     obj.position.set(x, 4.9, z);
-    obj.userData = { name, baseY: 4.9, lift: 0, revealed: false };
+    obj.userData = { name, baseY: 4.9, baseX: x, lift: 0, burst: 0 };
+    // własne kopie materiałów, żeby rozjaśnianie nie przenosiło się na świece w komnacie
+    obj.traverse((m) => { if (m.isMesh && m.material.emissive) m.material = m.material.clone(); });
     desk.add(obj); items.push(obj);
   };
   const book = new THREE.Group();

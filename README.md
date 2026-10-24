@@ -56,7 +56,7 @@ src/
 | I | Fulmen | strona tytułowa | rysowanie błyskawic wynurza wieżę |
 | II | Visio | projekty | kryształowa kula, strzałki, kliknięcie = wpatrzenie się |
 | III | Transmutatio | breakdown | suwak drut → glina → dzieło (dzieło w prawdziwych kolorach) |
-| IV | Multiplicatio | umiejętności | kursor się klonuje, klony łapią uciekające zwoje |
+| IV | Multiplicatio | umiejętności | kliknięcie tworzy klon kursora (Win98) w innym polu ekranu, klon powtarza ruchy z opóźnieniem; zwój łapie się, przytrzymując klon nad nim |
 | V | Levitatio | o mnie | przytrzymanie przedmiotu na biurku unosi go |
 | VI | Evocatio | kontakt | czar przywołuje kruka ASCII (model 3D), który krąży, dopóki nie wyślesz listu; potem odlatuje, a list otwiera się w programie pocztowym |
 
