@@ -32,6 +32,14 @@ export const CONFIG = {
   // images:  rendery do galerii, np. ['assets/projects/golem-1.jpg', ...]
   projects: [
     {
+      title: 'Głowa smoka',
+      year: 2026,
+      genre: 'Sculpt',
+      tools: ['Blender'],
+      desc: 'Rzeźba głowy smoka z rozbudowanym porożem. Tu opisz, jak powstała: inspiracje, pracę nad formą i to, co chciałeś osiągnąć.',
+      model: 'assets/projects/smok-glowa.glb', placeholder: 'golem', images: [], link: '',
+    },
+    {
       title: 'Strażnica Mgieł',
       year: 2025,
       genre: 'Environment',

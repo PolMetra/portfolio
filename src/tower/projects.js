@@ -86,7 +86,7 @@ function normalize(obj) {
 const shadowMat = new THREE.MeshBasicMaterial({ color: 0x03050d, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
 const wireMat = new THREE.MeshBasicMaterial({ color: 0xdfe3f2, wireframe: true, transparent: true, opacity: 0.95, depthWrite: false });
 // GLINA: jasna, matowa, z wyraźnym cieniowaniem fasetek
-const clayMat = new THREE.MeshStandardMaterial({ color: 0xf2eee6, roughness: 0.85, flatShading: true });
+const clayMat = new THREE.MeshStandardMaterial({ color: 0xa8a49c, roughness: 0.85, flatShading: true });
 
 export class ProjectModel {
   constructor(project, manager) {
@@ -105,10 +105,15 @@ export class ProjectModel {
     this.content = obj;
     this.meshes = [];
     obj.traverse((o) => { if (o.isMesh && !o.userData.isWire) this.meshes.push(o); });
+    // gęsty sculpt w niskiej rozdzielczości zlewa się w białą plamę,
+    // więc im więcej trójkątów, tym delikatniejsza siatka
+    const tris = this.meshes.reduce((n, m) => n + (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3, 0);
+    const wire = wireMat.clone();
+    wire.opacity = Math.min(0.95, Math.max(0.12, 0.95 * Math.sqrt(2500 / Math.max(tris, 1))));
     for (const m of this.meshes) {
       m.userData.orig = m.material;
       // nakładka z siatką dzielona z tą samą geometrią
-      const w = new THREE.Mesh(m.geometry, wireMat);
+      const w = new THREE.Mesh(m.geometry, wire);
       w.userData.isWire = true;
       w.visible = false;
       w.renderOrder = 2;
