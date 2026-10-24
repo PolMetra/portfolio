@@ -31,7 +31,7 @@ export class Hud {
 
   bolt(where) {
     this.bolts++;
-    this.log(`FULMEN ${pad(this.bolts)} → ${where}`);
+    this.log(`BŁYSKAWICA ${pad(this.bolts)} → ${where}`);
   }
 
   setChapter(s) { this.chapter.textContent = s; }

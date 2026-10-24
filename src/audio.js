@@ -116,19 +116,35 @@ function buildRain() {
   drop();
 }
 
-// ---------- ŚWIECE (tylko w wieży) ----------
+// ---------- ŚWIECE I KOMINEK (tylko w wieży) ----------
 function buildCandles() {
   // cichy, ciepły szum płomienia z delikatnym "oddechem"
   const flame = loop(noiseR, 'bandpass', 420, 0.022, indoor, { q: 0.9 });
   const breathe = ctx.createOscillator(); breathe.frequency.value = 0.23;
   const bg = gain(0.008); breathe.connect(bg).connect(flame.g.gain); breathe.start();
-  const lowFlame = loop(brownBuf, 'lowpass', 160, 0.06, indoor);
-  void lowFlame;
+  // kominek: niski szum ognia, który "oddycha"
+  const roar = loop(brownBuf, 'lowpass', 240, 0.16, indoor);
+  const rl = ctx.createOscillator(); rl.frequency.value = 0.17;
+  const rlg = gain(0.05); rl.connect(rlg).connect(roar.g.gain); rl.start();
+  const hiss = loop(noiseL, 'highpass', 6000, 0.008, indoor);
+  void hiss;
   // trzaski knota: krótkie, suche kliknięcia, czasem seria
   const crack = () => {
     if (!ctx) return;
     if (isIndoor) {
-      const burst = Math.random() < 0.25 ? 2 + Math.floor(Math.random() * 3) : 1;
+      // czasem głębszy "strzał" wilgotnego polana z kominka
+      if (Math.random() < 0.18) {
+        const t = ctx.currentTime;
+        const sp = src(noiseR, false);
+        const f = filt('bandpass', 700 + Math.random() * 700, 1.4);
+        const g = gain(0);
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.12 + Math.random() * 0.1, t + 0.002);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09 + Math.random() * 0.08);
+        sp.connect(f).connect(pan(0.45)).connect(g).connect(indoor);
+        sp.start(t, Math.random() * 2); sp.stop(t + 0.25);
+      }
+      const burst = Math.random() < 0.35 ? 2 + Math.floor(Math.random() * 4) : 1;
       for (let k = 0; k < burst; k++) {
         const t = ctx.currentTime + k * (0.02 + Math.random() * 0.05);
         const s = src(noiseL, false);
@@ -141,7 +157,7 @@ function buildCandles() {
         s.start(t, Math.random() * 2); s.stop(t + 0.05);
       }
     }
-    candleTimer = setTimeout(crack, 180 + Math.random() * 1400);
+    candleTimer = setTimeout(crack, 120 + Math.random() * 700);
   };
   crack();
 }

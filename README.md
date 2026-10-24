@@ -1,7 +1,7 @@
 # Wieża Portfolio
 
 Interaktywne portfolio 3D: gotycka księga, surowe ASCII i druk kobaltowy na scenie w rozdzielczości PS2. Gość trafia na wzburzone morze,
-czarodziej ARKANUS uczy go rysować błyskawice, a energia burzy wyrywa z głębin
+czarodziej M3rlin uczy go rysować błyskawice, a energia burzy wyrywa z głębin
 wieżę z napisem PORTFOLIO.
 
 ## Uruchomienie lokalne
@@ -51,14 +51,14 @@ src/
 
 ## Rozdziały (Księga Czarów)
 
-| # | Czar | Co odsłania | Jak działa |
-|---|---|---|---|
-| I | Fulmen | strona tytułowa | rysowanie błyskawic wynurza wieżę |
-| II | Visio | projekty | kryształowa kula, strzałki, kliknięcie = wpatrzenie się |
-| III | Transmutatio | breakdown | suwak drut → glina → dzieło (dzieło w prawdziwych kolorach) |
-| IV | Multiplicatio | umiejętności | kliknięcie tworzy klon kursora (Win98) w innym polu ekranu, klon powtarza ruchy z opóźnieniem; zwój łapie się, przytrzymując klon nad nim |
-| V | Levitatio | o mnie | przytrzymanie przedmiotu na biurku unosi go |
-| VI | Evocatio | kontakt | czar przywołuje kruka ASCII (model 3D), który krąży, dopóki nie wyślesz listu; potem odlatuje, a list otwiera się w programie pocztowym |
+| # | Rozdział | Jak działa |
+|---|---|---|
+| I | Burza | rysowanie błyskawic wynurza wieżę |
+| II | Projekty | kryształowa kula, strzałki, kliknięcie = wpatrzenie się |
+| III | Etapy pracy | suwak siatka → glina → gotowy model (w prawdziwych kolorach) |
+| IV | Umiejętności | kliknięcie tworzy klon kursora (Win98) w innym polu, klon powtarza ruchy; zwój łapie się, przytrzymując klon nad nim |
+| V | O mnie | przytrzymanie przedmiotu na biurku unosi go i odsłania fragment |
+| VI | Kontakt | czarodziej przywołuje kruka ASCII, który krąży, dopóki nie wyślesz listu |
 
 Każdy czar odpieczętowuje następny, a postęp jest zapamiętywany w przeglądarce.
 „Zdejmij wszystkie pieczęcie” w księdze otwiera wszystko od razu (dla zabieganych).

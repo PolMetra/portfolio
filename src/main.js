@@ -83,7 +83,7 @@ addEventListener('resize', resize);
 //  UI
 // ============================================================
 const wizard = new Wizard(document.getElementById('wizard-ascii'), renderer);
-document.querySelector('.dlg-who').textContent = CONFIG.wizardName;
+document.querySelector('.dlg-who').textContent = CONFIG.wizardName.toUpperCase();
 const hud = new Hud();
 
 const dialog = new Dialog(document.getElementById('dialog'), wizard);
@@ -133,7 +133,7 @@ const store = {
 function meterHTML() {
   const p = Math.min(1, state.charge / CONFIG.chargeNeeded);
   const n = 28, f = Math.round(p * n);
-  return `VIS FULMINIS  [${'/'.repeat(f)}${'·'.repeat(n - f)}]  ${String(Math.round(p * 100)).padStart(3, ' ')}%`;
+  return `SIŁA BURZY  [${'/'.repeat(f)}${'·'.repeat(n - f)}]  ${String(Math.round(p * 100)).padStart(3, ' ')}%`;
 }
 
 // ============================================================
@@ -173,7 +173,7 @@ function startDrawing() {
   state.milestone = 0;
   const how = isTouch ? 'Przytrzymaj palec' : 'Przytrzymaj przycisk myszy';
   dialog.line({ text: `${how} i narysuj błyskawicę na niebie. Śmiało, nie gryzie... zbyt mocno.`, hold: true, mood: 'cast' });
-  hud.log('INCANTATIO: FULMEN');
+  hud.log('CZAR: BŁYSKAWICA');
   dialog.setExtra(meterHTML());
   new Promise((r) => { chargeResolve = r; }).then(summon);
 }
@@ -201,8 +201,8 @@ function summon() {
   lightning.end();
   Audio.crackle(false);
   store.set();
-  hud.log('TURRIS SURGIT — WIEŻA SIĘ WYNURZA');
-  hud.setChapter('CAP. I — TURRIS');
+  hud.log('WIEŻA SIĘ WYNURZA');
+  hud.setChapter('ROZDZIAŁ I · WIEŻA');
   wizard.set('cast');
 }
 
@@ -245,8 +245,9 @@ function updateSummon(dt) {
 async function afterSummon() {
   await wait(1.6);
   await dialog.say([
-    { text: `Oto ona — Wieża Portfolio! Tu spoczywają wszystkie dzieła, które stworzył ${CONFIG.name}.`, mood: 'point' },
-    'Burza jest teraz twoja. Ciskaj błyskawicami do woli — kryształ na szczycie wieży je wyłapie.',
+    { text: `Oto ona, Wieża Portfolio! Tu spoczywają wszystkie dzieła, które stworzył ${CONFIG.name}.`, mood: 'point' },
+    { text: 'Tak, ten Artur. Zawsze wiedziałem, że chłopak daleko zajdzie, choć miecza z kamienia wyciągać nie chciał.', mood: 'happy' },
+    'Burza jest teraz twoja. Ciskaj błyskawicami do woli, kryształ na szczycie wieży je wyłapie.',
   ]);
   menu();
 }
@@ -304,7 +305,7 @@ async function goStorm() {
   post.renderPass.scene = scene;
   post.renderPass.camera = camera;
   document.getElementById('title').classList.remove('away');
-  hud.setChapter('CAP. I — TURRIS');
+  hud.setChapter('ROZDZIAŁ I · WIEŻA');
   fade.classList.remove('on');
   await wait(0.6);
   menu();
@@ -320,8 +321,8 @@ function skipToEnd() {
   state.phase = 'free';
   state.rise = 1;
   title.showInstant();
-  hud.setChapter('CAP. I — TURRIS');
-  hud.log('TURRIS SURGIT — WIEŻA SIĘ WYNURZA');
+  hud.setChapter('ROZDZIAŁ I · WIEŻA');
+  hud.log('WIEŻA SIĘ WYNURZA');
   flash(1.2);
   Audio.thunder(1);
   store.set();
@@ -396,7 +397,7 @@ function endStroke(e) {
     const c = castle.crystalWorld(new THREE.Vector3());
     lightning.strike(end, c, { depth: 5, spread: 0.2, life: 0.45 });
     castle.glow = 1;
-    hud.bolt('TURRIS / KRYSZTAŁ');
+    hud.bolt('WIEŻA / KRYSZTAŁ');
     flash(0.4, c.clone().sub(camera.position));
     boltLight.position.copy(c);
   } else {
@@ -406,7 +407,7 @@ function endStroke(e) {
     ocean.material.uniforms.uImpact.value.copy(to);
     state.impact = 1.6;
     splash.emitAt(to, 40);
-    hud.bolt(`MARE  x${to.x >= 0 ? '+' : ''}${to.x.toFixed(1)}`);
+    hud.bolt(`MORZE  x${to.x >= 0 ? '+' : ''}${to.x.toFixed(1)}`);
     flash(0.45, to.clone().sub(camera.position));
     boltLight.position.copy(to).y += 6;
   }
@@ -446,13 +447,13 @@ async function bootSequence() {
   const out = boot.querySelector('.boot-log');
   revealBraille(boot.querySelector('.boot-orn'), bandOrnament(40, 4), 1.4);
   const lines = [
-    `CODEX ${W.toUpperCase()} · TOMUS I`,
+    `KSIĘGA ${W.toUpperCase()}A · TOM I`,
     '────────────────────────────────',
     'PERGAMIN .................... OK',
     'ATRAMENT KOBALTOWY .......... OK',
     'CHMURY BURZOWE .............. OK',
     'MORZE WZBURZONE ............. OK',
-    `MAGUS ${W.toUpperCase().padEnd(10, ' ')} ............ OBUDZONY`,
+    `CZARODZIEJ ${W.toUpperCase().padEnd(7, ' ')} ........ OBUDZONY`,
   ];
   for (const l of lines) {
     out.textContent += l + '\n';
@@ -470,7 +471,7 @@ async function bootSequence() {
     setTimeout(() => boot.remove(), 900);
     skipBtn.classList.add('show');
     document.body.classList.add('live');
-    hud.log('LIBER APERTUS — KSIĘGA OTWARTA');
+    hud.log('KSIĘGA OTWARTA');
     intro();
   };
   addEventListener('keydown', go);

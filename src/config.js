@@ -8,7 +8,7 @@ export const CONFIG = {
   artstation: 'https://www.artstation.com/',
 
   // Imię przewodnika
-  wizardName: 'ARKANUS',
+  wizardName: 'M3rlin',
 
   // Wygląd PS2: wysokość wewnętrznej rozdzielczości renderu (px).
   // Mniej = bardziej pikselowo. PS2 grało zwykle w ~448.

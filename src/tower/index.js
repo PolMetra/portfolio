@@ -104,12 +104,12 @@ export class Tower {
   spells() {
     const p = this.progress;
     return [
-      { id: 'fulmen', num: 'I', name: 'Fulmen', pl: 'Błyskawica · wynurzenie wieży', open: true, done: true },
-      { id: 'visio', num: 'II', name: 'Visio', pl: 'Jasnowidzenie · projekty', open: true, done: !!p.visio },
-      { id: 'transmutatio', num: 'III', name: 'Transmutatio', pl: 'Przemiana · drut, glina, dzieło', open: !!p.visio, done: !!p.transm },
-      { id: 'multiplicatio', num: 'IV', name: 'Multiplicatio', pl: 'Mnożenie · umiejętności', open: !!p.transm, done: !!p.multi },
-      { id: 'levitatio', num: 'V', name: 'Levitatio', pl: 'Lewitacja · o mnie', open: !!p.multi, done: !!p.levit },
-      { id: 'evocatio', num: 'VI', name: 'Evocatio', pl: 'Przywołanie · kontakt', open: !!p.levit, done: !!p.evoc },
+      { id: 'fulmen', num: 'I', name: 'Burza', pl: 'wróć na morze, do wieży', open: true, done: true },
+      { id: 'visio', num: 'II', name: 'Projekty', pl: 'kryształowa kula', open: true, done: !!p.visio },
+      { id: 'transmutatio', num: 'III', name: 'Etapy pracy', pl: 'od siatki do gotowego modelu', open: !!p.visio, done: !!p.transm },
+      { id: 'multiplicatio', num: 'IV', name: 'Umiejętności', pl: 'gra z kursorami', open: !!p.transm, done: !!p.multi },
+      { id: 'levitatio', num: 'V', name: 'O mnie', pl: 'przedmioty na biurku', open: !!p.multi, done: !!p.levit },
+      { id: 'evocatio', num: 'VI', name: 'Kontakt', pl: 'list przez kruka', open: !!p.levit, done: !!p.evoc },
     ];
   }
 
@@ -172,19 +172,19 @@ export class Tower {
     this.camLook.copy(this.stations.door.look);
     this.goal = this.stations.hub;
     document.body.classList.add('in-tower');
-    this.hud.setChapter('CAP. II — TURRIS INTUS');
-    this.hud.log('INTRAS TURRIM — WNĘTRZE WIEŻY');
+    this.hud.setChapter('ROZDZIAŁ II · WNĘTRZE WIEŻY');
+    this.hud.log('WNĘTRZE WIEŻY');
     this.dialog.cancel();
     await wait(1.4);
     if (!this.active) return;
     if (this.progress.met) { this.openBook(); return; }
     this.progress.met = true; this.save();
     const v = await this.dialog.say([
-      { text: 'Witaj w mojej pracowni. Uważaj na świece — pamiętają jeszcze poprzedniego ucznia.', mood: 'point' },
+      { text: 'Witaj w mojej pracowni. Siadaj przy kominku, jeśli zmarzłeś. I uważaj na świece, pamiętają jeszcze poprzedniego ucznia.', mood: 'point' },
       { text: 'Wszystkie dzieła mistrza zapisano w Księdze Czarów. Każdy czar otwiera kolejną stronę… ale strony są zapieczętowane.', mood: 'idle' },
       { text: 'Chcesz zdejmować pieczęcie po kolei, czy spieszysz się, wędrowcze?', choices: [
         { label: 'I.    POKAŻ MI KSIĘGĘ', value: 'book' },
-        { label: 'II.   SPIESZĘ SIĘ — ZDEJMIJ WSZYSTKIE PIECZĘCIE', value: 'unseal' },
+        { label: 'II.   SPIESZĘ SIĘ, ZDEJMIJ WSZYSTKIE PIECZĘCIE', value: 'unseal' },
       ] },
     ]);
     if (v === CANCEL) return;
@@ -221,7 +221,7 @@ export class Tower {
     this.goal = this.stations.hub;
     this.renderBook();
     this.book.classList.add('open');
-    this.hud.setChapter('CAP. II — LIBER INCANTATIONUM');
+    this.hud.setChapter('KSIĘGA CZARÓW');
     this.dialog.line({ text: 'Wybierz czar z księgi. Zapieczętowane strony otworzą się, gdy opanujesz poprzednie.', hold: true, mood: 'idle' });
   }
 
@@ -232,7 +232,7 @@ export class Tower {
     this.save();
     this.audio.chime();
     this.flash = 0.6;
-    this.hud.log('SIGILLA FRACTA — PIECZĘCIE ZDJĘTE');
+    this.hud.log('PIECZĘCIE ZDJĘTE');
     this.openBook();
     this.dialog.line({ text: 'Puff! Wszystkie pieczęcie zdjęte. Każda strona księgi otworzy się od razu.', hold: true, mood: 'cast' });
   }
@@ -267,7 +267,7 @@ export class Tower {
   visio() {
     this.mode = 'ball';
     this.goal = this.mobile ? { pos: V(0, 10.6, 15), look: V(0, 9.6, 0) } : this.stations.ball;
-    this.hud.setChapter('CAP. II — VISIO');
+    this.hud.setChapter('ROZDZIAŁ II · PROJEKTY');
     this.ballnav.classList.add('open');
     this.showProject(this.current);
     const first = !this.progress.visio;
@@ -289,8 +289,8 @@ export class Tower {
     const model = this.models[this.current];
     const p = this.config.projects[this.current];
     this.holderGoal = { y: this.room.BALL_Y + 4.9, s: 2.3 };
-    this.hud.setChapter('CAP. III — TRANSMUTATIO');
-    this.hud.log(`VISIO: ${p.title.toUpperCase()}`);
+    this.hud.setChapter('ROZDZIAŁ III · ETAPY PRACY');
+    this.hud.log(`PROJEKT: ${p.title.toUpperCase()}`);
 
     this.panel.open('PROJEKT', projectHTML(p, this.current, this.models.length));
     this.panel.onClose = () => { if (this.mode === 'view') this.backToBall(); };
@@ -305,7 +305,7 @@ export class Tower {
 
     if (!this.progress.visio) { this.progress.visio = true; this.save(); this.hud.log('PAGINA III APERTA'); }
     if (firstTime) {
-      await this.dialog.say([{ text: 'Widzisz? Na razie to sam drut — szkielet dzieła. Przesuń suwak ETAPY PRACY, a zobaczysz, jak powstawało.', hold: true, mood: 'cast' }]);
+      await this.dialog.say([{ text: 'Widzisz? Na razie to sam drut, szkielet dzieła. Przesuń suwak ETAPY PRACY, a zobaczysz, jak powstawało.', hold: true, mood: 'cast' }]);
     } else {
       this.dialog.line({ text: 'Suwak ETAPY PRACY pokazuje drogę dzieła: od siatki, przez glinę, do gotowej formy.', hold: true, mood: 'idle' });
     }
@@ -326,10 +326,10 @@ export class Tower {
     if (s === 2 && !this.progress.transm) {
       this.progress.transm = true; this.save();
       this.audio.chime();
-      this.hud.log('PAGINA IV APERTA — MULTIPLICATIO');
+      this.hud.log('OTWARTY ROZDZIAŁ IV');
       this.dialog.say([
         { text: 'Prawdziwe barwy! Transmutacja zdejmuje kobaltowy czar z dzieła.', mood: 'happy' },
-        { text: 'W księdze odpieczętowała się nowa strona: Multiplicatio. Obejrzyj resztę wizji albo wróć do księgi.', hold: true, mood: 'point' },
+        { text: 'W księdze odpieczętowała się nowa strona: Umiejętności. Obejrzyj resztę wizji albo wróć do księgi.', hold: true, mood: 'point' },
       ]);
     }
   }
@@ -348,7 +348,7 @@ export class Tower {
   async multiplicatio() {
     this.mode = 'multi';
     this.goal = this.stations.hub;
-    this.hud.setChapter('CAP. IV — MULTIPLICATIO');
+    this.hud.setChapter('ROZDZIAŁ IV · UMIEJĘTNOŚCI');
     const refresh = () => this.panel.open('UMIEJĘTNOŚCI', skillsHTML(this.config.skills, this.caught));
     refresh();
     this.panel.onClose = () => { if (this.mode === 'multi') this.openBook(); };
@@ -363,9 +363,9 @@ export class Tower {
       if (v === 'book') { this.openBook(); return; }
       replay = true;
     }
-    const r = replay ? await this.dialog.say([{ text: 'Dobrze, wypuszczam zwoje z powrotem. MULTIPLICATIO!', mood: 'cast' }]) : await this.dialog.say([
-      { text: 'Zwoje z wiedzą mistrza są płochliwe — uciekają przed każdą ręką.', mood: 'idle' },
-      { text: 'Rzucę na ciebie Multiplicatio. Każde kliknięcie stworzy kopię twojej ręki w innym polu. Kopia powtarza twoje ruchy, z lekkim opóźnieniem.', mood: 'cast' },
+    const r = replay ? await this.dialog.say([{ text: 'Dobrze, wypuszczam zwoje z powrotem. Rozmnóż się, ręko!', mood: 'cast' }]) : await this.dialog.say([
+      { text: 'Zwoje z wiedzą mistrza są płochliwe. Uciekają przed każdą ręką.', mood: 'idle' },
+      { text: 'Rzucę na ciebie czar mnożenia. Każde kliknięcie stworzy kopię twojej ręki w innym polu. Kopia powtarza twoje ruchy, z lekkim opóźnieniem.', mood: 'cast' },
       { text: 'Zwoje uciekają przed prawdziwą ręką. Złapiesz je tylko kopią, przytrzymując ją nad zwojem przez chwilę. Kopie słabną i znikają, więc klikaj z głową.', mood: 'point' },
     ]);
     if (r === CANCEL || this.mode !== 'multi') return;
@@ -374,7 +374,7 @@ export class Tower {
     document.body.classList.add('no-cursor');
     this.replay = replay;
     this.game.start(replay ? new Set() : this.caught);
-    this.dialog.line({ text: 'MULTIPLICATIO! Kliknij, by rozmnożyć kursor, i przytrzymaj kopię nad zwojem.', hold: true, mood: 'cast' });
+    this.dialog.line({ text: 'Rozmnóż się, ręko! Kliknij, by rozmnożyć kursor, i przytrzymaj kopię nad zwojem.', hold: true, mood: 'cast' });
   }
 
   onScroll(i) {
@@ -394,11 +394,11 @@ export class Tower {
     }
     this.progress.multi = true; this.save();
     this.audio.chime();
-    this.hud.log('PAGINA V APERTA — LEVITATIO');
+    this.hud.log('OTWARTY ROZDZIAŁ V');
     this.refreshSkills?.();
     this.dialog.say([
       { text: 'Wszystkie zwoje! Klony znikają… i dobrze, jeden ciebie w zupełności wystarczy.', mood: 'happy' },
-      { text: 'Otworzyła się strona Levitatio. Na moim biurku leżą przedmioty, które opowiedzą ci o mistrzu.', hold: true, mood: 'point' },
+      { text: 'Otworzyła się strona O mnie. Na moim biurku leżą przedmioty, które opowiedzą ci o mistrzu.', hold: true, mood: 'point' },
     ]);
   }
 
@@ -408,7 +408,7 @@ export class Tower {
   async levitatio() {
     this.mode = 'levit';
     this.goal = this.stations.desk;
-    this.hud.setChapter('CAP. V — LEVITATIO');
+    this.hud.setChapter('ROZDZIAŁ V · O MNIE');
     this.refreshAbout();
     this.panel.onClose = () => { if (this.mode === 'levit') this.openBook(); };
     const how = `${this.mobile ? 'Przytrzymaj palec' : 'Przytrzymaj przycisk myszy'} na przedmiocie, a uniesie się i zdradzi fragment historii mistrza.`;
@@ -440,15 +440,15 @@ export class Tower {
     obj.userData.burst = 1; // rozbłysk
     this.flash = Math.max(this.flash, 0.25);
     this.audio.blip(1.9);
-    this.hud.log(`LEVITATIO: ${obj.userData.name}`);
+    this.hud.log(`UNIESIONO: ${obj.userData.name}`);
     this.refreshAbout();
     if (this.revealed.size >= this.config.about.length && !this.progress.levit) {
       this.progress.levit = true; this.save();
       this.audio.chime();
-      this.hud.log('PAGINA VI APERTA — EVOCATIO');
+      this.hud.log('OTWARTY ROZDZIAŁ VI');
       this.dialog.say([
         { text: 'Teraz wiesz o mistrzu więcej niż jego własna matka. No, prawie.', mood: 'happy' },
-        { text: 'Została ostatnia strona: Evocatio. Przywołamy kruka, który zaniesie twój list.', hold: true, mood: 'point' },
+        { text: 'Została ostatnia strona: Kontakt. Przywołamy kruka, który zaniesie twój list.', hold: true, mood: 'point' },
       ]);
     }
   }
@@ -459,22 +459,22 @@ export class Tower {
   async evocatio() {
     this.mode = 'evoc';
     this.goal = this.stations.wall;
-    this.hud.setChapter('CAP. VI — EVOCATIO');
+    this.hud.setChapter('ROZDZIAŁ VI · KONTAKT');
     const first = !this.progress.evoc;
     const r = await this.dialog.say([
       first
         ? { text: 'Ostatni czar. Przywołam posłańca, który zaniesie twój list do mistrza.', mood: 'idle' }
-        : { text: 'Kruk znowu? Dobrze, dobrze — zawsze jest głodny listów.', mood: 'idle' },
-      { text: 'EVOCATIO CORVI!', mood: 'cast' },
+        : { text: 'Kruk znowu? Dobrze, dobrze. Zawsze jest głodny listów.', mood: 'idle' },
+      { text: 'Przybądź, kruku!', mood: 'cast' },
     ]);
     if (r === CANCEL || this.mode !== 'evoc') return;
     this.audio.thunder(0.7);
     this.flash = 0.5;
-    this.hud.log('EVOCATIO — KRUK PRZYWOŁANY');
+    this.hud.log('KRUK PRZYWOŁANY');
     this.raven.summon();
     this.progress.evoc = true; this.save();
     this.openContact();
-    this.dialog.line({ text: 'Kruk będzie krążył, dopóki nie dasz mu listu. Napisz kilka słów i wyślij — poleci prosto do mistrza.', hold: true, mood: 'point' });
+    this.dialog.line({ text: 'Kruk będzie krążył, dopóki nie dasz mu listu. Napisz kilka słów i wyślij, a poleci prosto do mistrza.', hold: true, mood: 'point' });
   }
 
   openContact() {
@@ -485,12 +485,12 @@ export class Tower {
       e.preventDefault();
       const f = new FormData(form);
       const subject = encodeURIComponent('List z Wieży Portfolio');
-      const body = encodeURIComponent(`${f.get('body') || ''}\n\n— ${f.get('from') || ''}`);
+      const body = encodeURIComponent(`${f.get('body') || ''}\n\n${f.get('from') || ''}`);
       const url = `mailto:${this.config.contact.email}?subject=${subject}&body=${body}`;
       form.querySelector('button').disabled = true;
-      this.hud.log('EPISTULA MISSA — LIST WYSŁANY');
+      this.hud.log('LIST WYSŁANY');
       this.audio.blip(2);
-      this.dialog.line({ text: 'Leć, przyjacielu! …A ty sprawdź swoją skrzynkę pocztową — list czeka tam na ostatni podpis.', hold: true, mood: 'happy' });
+      this.dialog.line({ text: 'Leć, przyjacielu! A ty sprawdź swoją skrzynkę pocztową, list czeka tam na ostatni podpis.', hold: true, mood: 'happy' });
       await this.raven.depart();
       location.href = url;
       form.querySelector('button').disabled = false;
@@ -588,6 +588,21 @@ export class Tower {
     // świece
     R.flames.forEach((f, i) => { f.scale.y = 1 + Math.sin(t * 13 + i * 7) * 0.15 + Math.random() * 0.1; });
     R.candleLight.intensity = 2.2 + Math.sin(t * 11) * 0.25 + Math.random() * 0.2;
+    // ogień w kominku
+    R.fire.forEach((f, i) => {
+      const k2 = 0.75 + Math.sin(t * (9 + i) + i * 2) * 0.2 + Math.random() * 0.15;
+      f.scale.set(1, k2 * f.userData.h, 1);
+      f.position.y = f.userData.base + (k2 - 1) * 0.6;
+      f.rotation.z = Math.sin(t * 5 + i) * 0.12;
+    });
+    R.fireLight.intensity = 2.6 + Math.sin(t * 7) * 0.5 + Math.sin(t * 17) * 0.4 + Math.random() * 0.5;
+    const ep = R.embers.geometry.attributes.position;
+    R.embers.userData.v.forEach((e, i) => {
+      e.y += dt * e.s; e.x += Math.sin(t * 2 + i) * dt * 0.4;
+      if (e.y > 9) { e.y = 1.5; e.x = (Math.random() - 0.5) * 3; }
+      ep.setXYZ(i, e.x, e.y, e.z);
+    });
+    ep.needsUpdate = true;
     R.deskLight.intensity = 1.6 + Math.sin(t * 9 + 2) * 0.2;
 
     // burza za oknem

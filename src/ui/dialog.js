@@ -59,7 +59,7 @@ export class Dialog {
     this.nextEl.style.visibility = 'hidden';
     this.textEl.textContent = '';
     this.count++;
-    if (this.idxEl) this.idxEl.textContent = `LOQ. ${String(this.count).padStart(3, '0')}`;
+    if (this.idxEl) this.idxEl.textContent = String(this.count).padStart(3, '0');
     this.wizard.set(spec.mood || 'idle');
     this.wizard.talking = true;
     return new Promise((res) => { this.waiting = res; });

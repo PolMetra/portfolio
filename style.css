@@ -195,7 +195,7 @@ body.live #wizard { opacity: 1; }
 }
 #boot.gone { opacity: 0; pointer-events: none; }
 .boot-orn { font-size: 13px; }
-.boot-title { font-family: 'Fraktur', serif; font-size: clamp(44px, 6vw, 80px); color: var(--bone); text-shadow: 3px 3px 0 var(--deep); }
+.boot-title { font-family: 'Grenze', serif; font-weight: 600; font-size: clamp(44px, 6vw, 80px); color: var(--bone); text-shadow: 3px 3px 0 var(--deep); }
 .boot-log { margin: 0; min-height: 7.5em; min-width: 340px; font-size: 12px; line-height: 1.55; letter-spacing: .08em; color: var(--bone-dim); }
 .boot-start { opacity: 0; font-size: 13px; letter-spacing: .3em; color: var(--bone); text-align: center; }
 .boot-start small { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .2em; color: var(--bone-dim); }
@@ -239,7 +239,7 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
 .spell:hover, .spell:focus-visible { background: var(--bone); color: var(--cobalt); outline: none; }
 .spell:hover .sp-pl, .spell:focus-visible .sp-pl { color: var(--deep); }
 .sp-num { width: 2.6em; color: inherit; opacity: .7; }
-.sp-name { font-family: 'Fraktur', serif; font-size: 26px; letter-spacing: 0; line-height: 1; }
+.sp-name { font-family: 'Grenze', serif; font-weight: 600; font-size: 25px; letter-spacing: .01em; line-height: 1; }
 .sp-dots { flex: 1; border-bottom: 1px dotted currentColor; opacity: .35; transform: translateY(-4px); }
 .sp-pl { color: var(--bone-dim); white-space: nowrap; }
 .sp-mark { width: 1.4em; text-align: right; }

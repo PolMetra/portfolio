@@ -32,7 +32,7 @@ const field = (label, value) => `<div class="pf"><span class="pf-l">${label}</sp
 
 export function projectHTML(p, i, n) {
   const imgs = p.images && p.images.length
-    ? p.images.map((src, k) => `<figure class="plate"><img src="${esc(src)}" alt="${esc(p.title)} — rycina ${k + 1}" loading="lazy"><figcaption>RENDER ${k + 1}</figcaption></figure>`).join('')
+    ? p.images.map((src, k) => `<figure class="plate"><img src="${esc(src)}" alt="${esc(p.title)}, render ${k + 1}" loading="lazy"><figcaption>RENDER ${k + 1}</figcaption></figure>`).join('')
     : [1, 2, 3].map((k) => `<figure class="plate empty"><div>tu wstaw render<br><small>assets/projects/…</small></div><figcaption>RENDER ${k}</figcaption></figure>`).join('');
   return `
     <div class="p-num">PROJEKT ${i + 1} / ${n}</div>
