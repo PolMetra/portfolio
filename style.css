@@ -368,7 +368,7 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
 #lightbox { position: fixed; inset: 0; z-index: 58; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
   background: rgba(5, 8, 23, .94); opacity: 0; pointer-events: none; transition: opacity .25s; cursor: zoom-out; }
 #lightbox.open { opacity: 1; pointer-events: auto; }
-#lightbox img { max-width: 92vw; max-height: 84vh; border: 1px solid var(--bone-faint); }
+#lightbox img { width: min(92vw, calc(84vh * 16 / 9)); height: min(84vh, calc(92vw * 9 / 16)); object-fit: contain; background: #000; border: 1px solid var(--bone-faint); }
 #lightbox span { font-size: 11px; letter-spacing: .16em; color: var(--bone-dim); }
 .plate img { cursor: zoom-in; }
 #tip { position: fixed; left: 0; top: 0; z-index: 36; pointer-events: none; font-size: 11px; letter-spacing: .16em; color: var(--cobalt); background: var(--bone); padding: 3px 6px; opacity: 0; transition: opacity .15s; }

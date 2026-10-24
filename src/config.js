@@ -32,6 +32,46 @@ export const CONFIG = {
   // images:  rendery do galerii, np. ['assets/projects/golem-1.jpg', ...]
   projects: [
     {
+      title: 'Iron Lily',
+      year: 2025,
+      genre: 'Hard Surface',
+      tools: ['Blender', 'Substance Painter'],
+      desc: 'Mój największy i najambitniejszy projekt osobisty: autorski motocykl infiltracyjny przyszłości, zaprojektowany i wymodelowany od zera. Wydłużone podwozie inspirowane motocyklami bijącymi rekordy prędkości stawia na aerodynamikę w linii prostej. Najważniejszy element to ruchome górne owiewki: przy dużej prędkości zamykają się nad kierowcą jak płatki lilii, od której maszyna wzięła nazwę. Projekt opiera się na idei jinba ittai, jedności jeźdźca i maszyny. Główny napęd jest elektryczny: tylne koło bez piasty i trójkątne czujniki boczne działają jak odbiorniki indukcyjne, ładując motocykl z pól elektromagnetycznych autostrad przyszłości. Szczegółowy silnik spalinowy to zapas na strefy bez zasilania. Ogromne ćwiczenie z modelowania hard-surface, złożonych blockoutów mechanicznych i łączenia działającej inżynierii z opowieścią.',
+      model: 'assets/projects/iron-lily.glb', placeholder: 'lantern',
+      images: ['assets/projects/iron-lily-1.jpg', 'assets/projects/iron-lily-2.jpg', 'assets/projects/iron-lily-3.jpg'],
+      link: 'https://arturjedrzejczyk.artstation.com/',
+    },
+    {
+      title: 'Starożytne ruiny',
+      year: 2024,
+      genre: 'Environment · Low Poly',
+      tools: ['Blender'],
+      desc: 'Projekt na studia z projektowania otoczenia dla interfejsu gry: miniaturowa diorama-mapa, która służy jako ikona wyboru poziomu w menu głównym. Wybrałem motyw zrujnowanej greckiej świątyni w czystej, stylizowanej estetyce low poly. Ponieważ model ogląda się w menu, kluczowe były czytelność i mocny punkt skupienia. Scenę osadziłem w nocy, a głównym źródłem światła jest stylizowany ogień w centralnym palenisku. Ciepła, dramatyczna poświata na tle ciemności od razu przyciąga wzrok gracza i nadaje bryłę kanciastej, zrujnowanej architekturze.',
+      model: 'assets/projects/ruiny.glb', placeholder: 'tower',
+      images: ['assets/projects/ruiny-1.jpg', 'assets/projects/ruiny-2.jpg', 'assets/projects/ruiny-3.jpg'],
+      link: 'https://arturjedrzejczyk.artstation.com/',
+    },
+    {
+      title: 'KO! Rękawice bokserskie',
+      year: 2024,
+      genre: 'Product · Packaging',
+      tools: ['Blender'],
+      desc: 'Projekt na studia z projektowania opakowań produktu. Zamiast tradycyjnego kartonu czy siatki chciałem spróbować czegoś nietypowego: rękawic bokserskich szczelnie zapakowanych próżniowo w grubą folię. Rękawice wymodelowałem od zera i zaprojektowałem retro etykietę w stylu pixel art. Najciekawszym etapem było uzyskanie realistycznego efektu folii termokurczliwej: użyłem symulacji tkanin w Blenderze, tworząc cyfrową próżnię, która wysysa powietrze i obciska folię wokół złożonej geometrii rękawic. Świetne ćwiczenie z interakcji brył sztywnych i miękkich oraz zaawansowanych materiałów, zwłaszcza załamującej światło, pomarszczonej folii.',
+      model: 'assets/projects/rekawice-ko.glb', placeholder: 'reliquary',
+      images: ['assets/projects/rekawice-1.jpg', 'assets/projects/rekawice-2.jpg', 'assets/projects/rekawice-3.jpg'],
+      link: 'https://arturjedrzejczyk.artstation.com/',
+    },
+    {
+      title: 'Soul Chamber',
+      year: 2024,
+      genre: 'Prop · Sci-Fi',
+      tools: ['Blender', 'Substance Painter'],
+      desc: 'Odpowiedź na zadanie z zajęć: stworzyć pudełko z duszą w środku, nie pokazując samej duszy. Moja interpretacja to urządzenie ze świata cyberpunku do bezpiecznego transportu ludzkiej świadomości. Wytrzymała, szara obudowa ze stopu łączy industrialny charakter z zaawansowaną technologią, a jaskrawoczerwone akcenty, jak masywny uchwyt i pierścienie portów, ostrzegają przed ładunkiem najwyższej wagi. W przezroczystej komorze znajduje się gęsty, niebieski płyn bio-cyfrowy stabilizujący sygnał. Nie pokazuje duszy, ale tworzy środowisko, którego ona potrzebuje: świadomość to nie tylko dane, lecz złożony wzór impulsów nerwowych i emocji, wymagający wyjątkowego, schłodzonego nośnika.',
+      model: 'assets/projects/soul-chamber.glb', placeholder: 'reliquary',
+      images: ['assets/projects/soul-chamber-1.jpg', 'assets/projects/soul-chamber-2.jpg', 'assets/projects/soul-chamber-3.jpg'],
+      link: 'https://arturjedrzejczyk.artstation.com/',
+    },
+    {
       title: 'Głowa smoka',
       year: 2024,
       genre: 'Sculpt',
@@ -43,39 +83,8 @@ export const CONFIG = {
       // kolor i połysk gotowego modelu (opcjonalne): color '#rrggbb', roughness 0 = lustro … 1 = mat
       color: '#2e2b2b', roughness: 0.45,
     },
-    {
-      title: 'Strażnica Mgieł',
-      year: 2025,
-      genre: 'Environment',
-      tools: ['Blender', 'Substance Painter', 'Unreal Engine 5'],
-      desc: 'Samotna wieża sygnałowa na klifie. Modułowy kit kamienia, ręcznie malowane maski erozji, oświetlenie o świcie.',
-      model: null, placeholder: 'tower', images: [], link: '',
-    },
-    {
-      title: 'Golem z Torfowiska',
-      year: 2025,
-      genre: 'Character',
-      tools: ['ZBrush', 'Blender', 'Marmoset Toolbag'],
-      desc: 'Postać do gry: sculpt w ZBrushu, retopologia pod animację, mech i porosty jako osobne warstwy materiału.',
-      model: null, placeholder: 'golem', images: [], link: '',
-    },
-    {
-      title: 'Relikwiarz Zakonu',
-      year: 2024,
-      genre: 'Prop',
-      tools: ['Blender', 'Substance Painter'],
-      desc: 'Rekwizyt hero-prop: złocenia, emalia i wytarte krawędzie. Jeden zestaw tekstur 4K, trim sheet na ornamenty.',
-      model: null, placeholder: 'reliquary', images: [], link: '',
-    },
-    {
-      title: 'Latarnia Nawigatora',
-      year: 2024,
-      genre: 'Hard Surface',
-      tools: ['Blender', 'Substance Painter', 'Photoshop'],
-      desc: 'Mosiężna latarnia okrętowa. Ćwiczenie z hard-surface i szkła. Wersja do gry ma 6k trójkątów.',
-      model: null, placeholder: 'lantern', images: [], link: '',
-    },
   ],
+
 
   // ==========================================================
   //  UMIEJĘTNOŚCI — Multiplikacja (rozdział IV); level 1–5

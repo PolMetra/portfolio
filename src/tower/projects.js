@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 // Modele projektów: zastępcze bryły (dopóki nie wstawisz swoich .glb)
 // + przełączanie materiałów dla Transmutacji: 0 drut, 1 glina, 2 dzieło.
@@ -74,7 +75,10 @@ function normalize(obj) {
   const box = new THREE.Box3().setFromObject(obj);
   const size = box.getSize(new THREE.Vector3());
   const c = box.getCenter(new THREE.Vector3());
-  const s = 1.7 / Math.max(size.x, size.y, size.z);
+  // wydłużone modele (np. motocykl) mogą być dłuższe, żeby nie wyglądały na zapałkę
+  const dims = [size.x, size.y, size.z].sort((a, b) => a - b);
+  const elong = Math.min(1.6, Math.max(1, dims[2] / (dims[1] || 1) / 1.6));
+  const s = (1.7 * elong) / dims[2];
   const pivot = new THREE.Group();
   obj.position.sub(c);
   pivot.add(obj);
@@ -94,7 +98,7 @@ export class ProjectModel {
     this.stage = 2;
     this.setContent(normalize(BUILDERS[project.placeholder || 'tower']()));
     if (project.model) {
-      new GLTFLoader(manager).load(project.model, (gltf) => {
+      new GLTFLoader(manager).setMeshoptDecoder(MeshoptDecoder).load(project.model, (gltf) => {
         // opcjonalny kolor/połysk z config.js (gdy materiał z Blendera nie ma tekstur)
         if (project.color || project.roughness !== undefined) {
           gltf.scene.traverse((o) => {
@@ -106,7 +110,9 @@ export class ProjectModel {
           });
         }
         this.root.remove(this.content);
-        this.setContent(normalize(gltf.scene));
+        const pivot = normalize(gltf.scene);
+        pivot.userData.real = true;
+        this.setContent(pivot);
       }, undefined, () => console.warn('Nie wczytano modelu', project.model));
     }
   }
@@ -144,11 +150,14 @@ export class ProjectModel {
     for (const m of this.meshes) {
       m.material = s === 0 ? shadowMat : clayMat;
       m.userData.wire.visible = s === 0;
+      // przezroczyste elementy (folia, szkło) w siatce i glinie zasłaniałyby wnętrze, więc je chowamy
+      const glass = m.userData.orig && m.userData.orig.transparent;
+      m.visible = !(glass && s < 2);
     }
   }
 
   withTrueColors(fn) {
-    for (const m of this.meshes) m.material = m.userData.orig;
+    for (const m of this.meshes) { m.material = m.userData.orig; m.visible = true; }
     fn();
     this.setStage(this.stage);
   }
