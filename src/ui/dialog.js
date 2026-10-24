@@ -13,6 +13,8 @@ export class Dialog {
     this.nextEl = root.querySelector('.dlg-next');
     this.choicesEl = root.querySelector('.dlg-choices');
     this.extraEl = root.querySelector('.dlg-extra');
+    this.idxEl = root.querySelector('.dlg-idx');
+    this.count = 0;
     this.full = '';
     this.shown = 0;
     this.typing = false;
@@ -56,6 +58,8 @@ export class Dialog {
     this.choicesEl.innerHTML = '';
     this.nextEl.style.visibility = 'hidden';
     this.textEl.textContent = '';
+    this.count++;
+    if (this.idxEl) this.idxEl.textContent = `LOQ. ${String(this.count).padStart(3, '0')}`;
     this.wizard.set(spec.mood || 'idle');
     this.wizard.talking = true;
     return new Promise((res) => { this.waiting = res; });

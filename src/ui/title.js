@@ -1,70 +1,47 @@
-// Napis PORTFOLIO z blokowych znaków + imię i rola.
-// Litery pojawiają się kolumna po kolumnie z "glitchem".
+import { bandOrnament, revealBraille } from './braille.js';
 
-const FONT = {
-  P: ['████ ', '█   █', '████ ', '█    ', '█    '],
-  O: [' ███ ', '█   █', '█   █', '█   █', ' ███ '],
-  R: ['████ ', '█   █', '████ ', '█  █ ', '█   █'],
-  T: ['█████', '  █  ', '  █  ', '  █  ', '  █  '],
-  F: ['█████', '█    ', '████ ', '█    ', '█    '],
-  L: ['█    ', '█    ', '█    ', '█    ', '█████'],
-  I: ['███', ' █ ', ' █ ', ' █ ', '███'],
-};
+// Strona tytułowa księgi: drzeworytowy inicjał, gotyckie "Portfolio",
+// imię, rok rzymskimi cyframi i wici z kropek brajla.
 
-export function blockText(word) {
-  const rows = ['', '', '', '', ''];
-  [...word].forEach((ch, i) => {
-    const g = FONT[ch] || FONT.I;
-    for (let r = 0; r < 5; r++) rows[r] += (i ? ' ' : '') + g[r];
-  });
-  return rows;
+function roman(n) {
+  const map = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+  let s = '';
+  for (const [v, r] of map) while (n >= v) { s += r; n -= v; }
+  return s;
 }
 
-const GLITCH = '▓▒░#%&@$';
+// "IMIĘ NAZWISKO" -> "Imię Nazwisko" (wersaliki w gotyku są nieczytelne)
+function titleCase(s) {
+  return s.toLocaleLowerCase('pl').replace(/(^|[\s-])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase('pl'));
+}
 
 export class Title {
   constructor(root, config) {
     this.root = root;
-    this.logo = root.querySelector('.title-logo');
-    this.nameEl = root.querySelector('.title-name');
-    this.roleEl = root.querySelector('.title-role');
-    this.rows = blockText('PORTFOLIO');
-    this.width = this.rows[0].length;
-    this.name = config.name;
-    this.role = config.role;
-    this.progress = -1;
+    root.querySelector('.t-name').textContent = titleCase(config.name);
+    root.querySelector('.t-role').textContent = config.role;
+    root.querySelector('.t-anno').textContent = `ANNO DOMINI ${roman(new Date().getFullYear())}`;
+    this.ornTop = root.querySelector('.orn-top');
+    this.ornBot = root.querySelector('.orn-bot');
+    this.band = bandOrnament(44, 4);
+    this.bandFlip = bandOrnament(44, 4, true);
+    this.shown = false;
   }
 
   reveal() {
+    if (this.shown) return;
+    this.shown = true;
     this.root.classList.add('show');
-    this.progress = 0;
+    revealBraille(this.ornTop, this.band, 1.8);
+    setTimeout(() => revealBraille(this.ornBot, this.bandFlip, 1.8), 1600);
   }
 
   showInstant() {
-    this.root.classList.add('show');
-    this.progress = 1.0001;
-    this.draw();
+    this.shown = true;
+    this.root.classList.add('show', 'instant');
+    this.ornTop.textContent = this.band.join('\n');
+    this.ornBot.textContent = this.bandFlip.join('\n');
   }
 
-  update(dt) {
-    if (this.progress < 0 || this.progress > 1) return;
-    this.progress = Math.min(1.0001, this.progress + dt / 2.2);
-    this.draw();
-  }
-
-  draw() {
-    const p = Math.min(1, this.progress);
-    const col = Math.floor(p * (this.width + 6));
-    const out = this.rows.map((row) =>
-      [...row].map((ch, x) => {
-        if (x < col - 6) return ch;
-        if (x < col) return ch === ' ' ? ' ' : GLITCH[(Math.random() * GLITCH.length) | 0];
-        return ' ';
-      }).join(''));
-    this.logo.textContent = out.join('\n');
-    const np = Math.max(0, (this.progress - 0.55) / 0.45);
-    const n = Math.floor(np * this.name.length);
-    this.nameEl.textContent = this.name.slice(0, n) + (np < 1 && np > 0 ? '█' : '');
-    this.roleEl.textContent = np >= 1 ? `[ ${this.role} ]` : '';
-  }
+  update() {}
 }

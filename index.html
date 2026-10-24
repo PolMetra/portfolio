@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Wieża Portfolio</title>
+  <title>Liber Operum · Portfolio</title>
   <meta name="description" content="Interaktywne portfolio 3D — przywołaj wieżę czarodzieja błyskawicą.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#1838c0">
+  <link rel="preload" href="assets/fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/unifrakturmaguntia-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
   <script type="importmap">
     {
@@ -20,41 +20,55 @@
 </head>
 <body>
   <div id="stage"></div>
-  <div id="crt" aria-hidden="true"></div>
+  <div id="vignette" aria-hidden="true"></div>
 
-  <!-- NAPIS TYTUŁOWY -->
-  <header id="title" aria-live="polite">
-    <pre class="title-logo" aria-label="Portfolio"></pre>
-    <div class="title-name"></div>
-    <div class="title-role"></div>
+  <!-- STRONA TYTUŁOWA KSIĘGI -->
+  <header id="title">
+    <div class="page">
+      <pre class="orn orn-top" aria-hidden="true"></pre>
+      <div class="t-pre" data-r="1">✠ LIBER · OPERUM ✠</div>
+      <h1 class="t-main" data-r="2"><span class="initial">P</span><span class="rest">ortfolio</span></h1>
+      <div class="t-rule" data-r="3" aria-hidden="true"><span></span>✶<i>⁘</i>✶<span></span></div>
+      <div class="t-name" data-r="4"></div>
+      <div class="t-meta"><span class="t-role" data-r="5"></span><span class="t-dot" data-r="5">·</span><span class="t-anno" data-r="6"></span></div>
+      <pre class="orn orn-bot" aria-hidden="true"></pre>
+    </div>
   </header>
 
-  <!-- HUD -->
-  <button id="skip" class="hud hud-left">[ ESC ] POMIŃ INTRO</button>
-  <button id="mute" class="hud hud-right">[ ♪ WŁ ]</button>
-  <button id="call" class="hud hud-call">[ ✦ WEZWIJ CZARODZIEJA ]</button>
+  <!-- SUROWE NAKŁADKI -->
+  <pre id="hud-stats" class="hud-txt" aria-hidden="true"></pre>
+  <div id="hud-log" class="hud-txt" aria-hidden="true"></div>
+  <div id="hud-foot" class="hud-txt" aria-hidden="true"><span id="hud-chapter">CAP. I — TEMPESTAS</span><span id="hud-coords">X 0000 · Y 0000</span></div>
+  <nav id="hud-btns">
+    <button id="skip">[ESC] POMIŃ</button>
+    <button id="mute">[DŹWIĘK: TAK]</button>
+  </nav>
+  <button id="call">[ ✠ WEZWIJ CZARODZIEJA ]</button>
 
-  <!-- OKNO DIALOGOWE Z CZARODZIEJEM -->
-  <section id="dialog" role="dialog" aria-label="Czarodziej">
-    <div class="wiz">
-      <div class="wiz-screen"><pre class="wiz-art" aria-hidden="true"></pre></div>
-      <div class="wiz-name"></div>
-    </div>
-    <div class="dlg-body">
-      <p class="dlg-text"></p>
-      <div class="dlg-extra"></div>
-      <div class="dlg-choices"></div>
-      <div class="dlg-next">▼</div>
-    </div>
+  <!-- CZARODZIEJ: bryła 3D przeliczana na znaki -->
+  <figure id="wizard">
+    <div class="field"><span class="lbl">MAGUS</span><span class="val wiz-name"></span></div>
+    <pre id="wizard-ascii" aria-hidden="true"></pre>
+  </figure>
+
+  <!-- MOWA CZARODZIEJA (bez okna) -->
+  <section id="dialog" aria-live="polite">
+    <div class="dlg-head"><span class="dlg-who"></span><span class="dlg-line"></span><span class="dlg-idx">LOQ. 000</span></div>
+    <p class="dlg-text"></p>
+    <div class="dlg-extra"></div>
+    <div class="dlg-choices"></div>
+    <div class="dlg-next">▼ DALEJ</div>
   </section>
 
   <!-- EKRAN STARTOWY -->
   <div id="boot">
+    <pre class="orn boot-orn" aria-hidden="true"></pre>
+    <div class="boot-title">Liber Arkani</div>
     <pre class="boot-log"></pre>
-    <div class="boot-start">— NACIŚNIJ START —<small>kliknij lub wciśnij ENTER · dźwięk włączony</small></div>
+    <div class="boot-start">— DOTKNIJ, BY OTWORZYĆ KSIĘGĘ —<small>kliknij lub ENTER · z dźwiękiem</small></div>
   </div>
 
-  <noscript><p style="color:#c9a0ff;font-family:monospace;padding:2rem">Ta strona potrzebuje JavaScriptu i WebGL.</p></noscript>
+  <noscript><p style="color:#ece5d3;font-family:monospace;padding:2rem">Ta strona potrzebuje JavaScriptu i WebGL.</p></noscript>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

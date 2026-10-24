@@ -6,10 +6,10 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // Ważne: obiekt o nazwie "Crystal" w Twoim modelu (jeśli istnieje) stanie się
 // piorunochronem — tam będą uderzać błyskawice po przywołaniu zamku.
 
-const stone = new THREE.MeshLambertMaterial({ color: 0x3a3650, flatShading: true });
-const stoneDark = new THREE.MeshLambertMaterial({ color: 0x262236, flatShading: true });
-const roof = new THREE.MeshLambertMaterial({ color: 0x4a1f78, flatShading: true });
-const rock = new THREE.MeshLambertMaterial({ color: 0x1d1a26, flatShading: true });
+const stone = new THREE.MeshLambertMaterial({ color: 0x9aa0b8, flatShading: true });
+const stoneDark = new THREE.MeshLambertMaterial({ color: 0x5c6280, flatShading: true });
+const roof = new THREE.MeshLambertMaterial({ color: 0x3a4470, flatShading: true });
+const rock = new THREE.MeshLambertMaterial({ color: 0x2c3044, flatShading: true });
 const windowMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(2.4, 1.3, 0.45) });
 const crystalMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.6, 0.6, 3.0) });
 const runeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.0, 0.4, 2.2), transparent: true, opacity: 0.8 });

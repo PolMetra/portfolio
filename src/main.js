@@ -11,6 +11,8 @@ import { Wizard } from './ui/wizard.js';
 import { Dialog } from './ui/dialog.js';
 const CANCEL = Dialog.CANCEL;
 import { Title } from './ui/title.js';
+import { Hud } from './ui/hud.js';
+import { bandOrnament, revealBraille } from './ui/braille.js';
 
 // ============================================================
 //  SCENA
@@ -41,6 +43,10 @@ scene.add(moon);
 const rim = new THREE.DirectionalLight(0xa060ff, 1.4);
 rim.position.set(30, 60, -120);
 scene.add(rim);
+// światło od strony kamery, żeby zamek nie był płaską sylwetką
+const front = new THREE.DirectionalLight(0xc8d0ff, 1.3);
+front.position.set(80, 60, 140);
+scene.add(front);
 const boltLight = new THREE.PointLight(0xc9a0ff, 0, 260, 1);
 scene.add(boltLight);
 
@@ -75,8 +81,10 @@ addEventListener('resize', resize);
 // ============================================================
 //  UI
 // ============================================================
-const wizard = new Wizard(document.querySelector('.wiz-art'));
+const wizard = new Wizard(document.getElementById('wizard-ascii'), renderer);
 document.querySelector('.wiz-name').textContent = CONFIG.wizardName;
+document.querySelector('.dlg-who').textContent = CONFIG.wizardName;
+const hud = new Hud();
 const dialog = new Dialog(document.getElementById('dialog'), wizard);
 const title = new Title(document.getElementById('title'), CONFIG);
 const boot = document.getElementById('boot');
@@ -88,7 +96,7 @@ const isTouch = matchMedia('(pointer: coarse)').matches;
 muteBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   const m = Audio.toggleMute();
-  muteBtn.textContent = m ? '[ ♪ WYŁ ]' : '[ ♪ WŁ ]';
+  muteBtn.textContent = m ? '[DŹWIĘK: NIE]' : '[DŹWIĘK: TAK]';
 });
 
 // ============================================================
@@ -116,8 +124,8 @@ const store = {
 
 function meterHTML() {
   const p = Math.min(1, state.charge / CONFIG.chargeNeeded);
-  const n = 18, f = Math.round(p * n);
-  return `ENERGIA BURZY [${'█'.repeat(f)}${'░'.repeat(n - f)}] ${Math.round(p * 100)}%`;
+  const n = 28, f = Math.round(p * n);
+  return `VIS FULMINIS  [${'/'.repeat(f)}${'·'.repeat(n - f)}]  ${String(Math.round(p * 100)).padStart(3, ' ')}%`;
 }
 
 // ============================================================
@@ -133,8 +141,8 @@ async function intro() {
     const v = await dialog.say([
       { text: `Wróciłeś, wędrowcze! Burza wciąż pamięta twoją rękę.`, mood: 'happy' },
       { text: 'Przywołasz wieżę sam, czy mam ci ją od razu podać?', choices: [
-        { label: '> PRZYWOŁAM JĄ SAM', value: 'self' },
-        { label: '> OD RAZU DO WIEŻY', value: 'skip' },
+        { label: 'I.    PRZYWOŁAM JĄ SAM', value: 'self' },
+        { label: 'II.   OD RAZU DO WIEŻY', value: 'skip' },
       ] },
     ]);
     if (v === CANCEL) return;
@@ -156,7 +164,8 @@ function startDrawing() {
   state.charge = 0;
   state.milestone = 0;
   const how = isTouch ? 'Przytrzymaj palec' : 'Przytrzymaj przycisk myszy';
-  dialog.line({ text: `${how} i NARYSUJ błyskawicę na niebie. Śmiało, nie gryzie... zbyt mocno.`, hold: true, mood: 'cast' });
+  dialog.line({ text: `${how} i narysuj błyskawicę na niebie. Śmiało, nie gryzie... zbyt mocno.`, hold: true, mood: 'cast' });
+  hud.log('INCANTATIO: FULMEN');
   dialog.setExtra(meterHTML());
   new Promise((r) => { chargeResolve = r; }).then(summon);
 }
@@ -184,6 +193,9 @@ function summon() {
   lightning.end();
   Audio.crackle(false);
   store.set();
+  hud.log('TURRIS SURGIT — WIEŻA SIĘ WYNURZA');
+  hud.setChapter('CAP. I — TURRIS');
+  wizard.set('cast');
 }
 
 // oś czasu przywołania, wołana co klatkę
@@ -225,7 +237,7 @@ function updateSummon(dt) {
 async function afterSummon() {
   await wait(1.6);
   await dialog.say([
-    { text: `Oto ona — Wieża Portfolio! Tu spoczywają wszystkie dzieła, które stworzył ${CONFIG.name}.`, mood: 'happy' },
+    { text: `Oto ona — Wieża Portfolio! Tu spoczywają wszystkie dzieła, które stworzył ${CONFIG.name}.`, mood: 'point' },
     'Burza jest teraz twoja. Ciskaj błyskawicami do woli — kryształ na szczycie wieży je wyłapie.',
   ]);
   menu();
@@ -234,9 +246,9 @@ async function afterSummon() {
 async function menu() {
   callBtn.classList.remove('show');
   const v = await dialog.line({ text: 'Co robimy dalej, wędrowcze?', choices: [
-    { label: '> WEJDŹ DO WIEŻY', value: 'enter' },
-    { label: '> ARTSTATION ↗', value: 'art' },
-    { label: '> ZOSTAŃ I PODZIWIAJ BURZĘ', value: 'stay' },
+    { label: 'I.    WEJDŹ DO WIEŻY', value: 'enter' },
+    { label: 'II.   ARTSTATION ↗', value: 'art' },
+    { label: 'III.  ZOSTAŃ I PODZIWIAJ BURZĘ', value: 'stay' },
   ] });
   if (v === 'enter') {
     await dialog.say([{ text: 'Hmm... drzwi wciąż są zapieczętowane. Kryształowa kula budzi się powoli. Wróć wkrótce!', mood: 'idle' }]);
@@ -261,6 +273,8 @@ function skipToEnd() {
   state.phase = 'free';
   state.rise = 1;
   title.showInstant();
+  hud.setChapter('CAP. I — TURRIS');
+  hud.log('TURRIS SURGIT — WIEŻA SIĘ WYNURZA');
   flash(1.2);
   Audio.thunder(1);
   store.set();
@@ -335,6 +349,7 @@ function endStroke(e) {
     const c = castle.crystalWorld(new THREE.Vector3());
     lightning.strike(end, c, { depth: 5, spread: 0.2, life: 0.45 });
     castle.glow = 1;
+    hud.bolt('TURRIS / KRYSZTAŁ');
     flash(0.4, c.clone().sub(camera.position));
     boltLight.position.copy(c);
   } else {
@@ -344,6 +359,7 @@ function endStroke(e) {
     ocean.material.uniforms.uImpact.value.copy(to);
     state.impact = 1.6;
     splash.emitAt(to, 40);
+    hud.bolt(`MARE  x${to.x >= 0 ? '+' : ''}${to.x.toFixed(1)}`);
     flash(0.45, to.clone().sub(camera.position));
     boltLight.position.copy(to).y += 6;
   }
@@ -381,14 +397,15 @@ function wait(s) { return new Promise((r) => setTimeout(r, s * 1000)); }
 
 async function bootSequence() {
   const out = boot.querySelector('.boot-log');
+  revealBraille(boot.querySelector('.boot-orn'), bandOrnament(40, 4), 1.4);
   const lines = [
-    `${W.toUpperCase()} SYSTEM  v2.0`,
-    '(c) WIEŻA PORTFOLIO',
-    '',
-    'KARTA PAMIĘCI (8MB) ........ OK',
-    'ZWIJANIE CHMUR ............. OK',
-    'PODGRZEWANIE MORZA ......... OK',
-    'BUDZENIE CZARODZIEJA ....... OK',
+    `CODEX ${W.toUpperCase()} · TOMUS I`,
+    '────────────────────────────────',
+    'PERGAMIN .................... OK',
+    'ATRAMENT KOBALTOWY .......... OK',
+    'CHMURY BURZOWE .............. OK',
+    'MORZE WZBURZONE ............. OK',
+    `MAGUS ${W.toUpperCase().padEnd(10, ' ')} ............ OBUDZONY`,
   ];
   for (const l of lines) {
     out.textContent += l + '\n';
@@ -405,6 +422,8 @@ async function bootSequence() {
     boot.classList.add('gone');
     setTimeout(() => boot.remove(), 900);
     skipBtn.classList.add('show');
+    document.body.classList.add('live');
+    hud.log('LIBER APERTUS — KSIĘGA OTWARTA');
     intro();
   };
   addEventListener('keydown', go);
@@ -434,9 +453,9 @@ function tick() {
   camera.position.set(
     CAM_BASE.x + Math.sin(t * 0.23) * 9 + mouse.x * 3 + (Math.random() - 0.5) * sh,
     CAM_BASE.y + back * 4 + Math.sin(t * 0.6) * 1.6 + Math.sin(t * 1.7) * 0.4 + (Math.random() - 0.5) * sh,
-    CAM_BASE.z + back * 62 + Math.cos(t * 0.17) * 4,
+    CAM_BASE.z + back * 78 + Math.cos(t * 0.17) * 4,
   );
-  look.set(0, 24 + back * 9 - mouse.y * 3, 0);
+  look.set(0, 24 + back * 27 - mouse.y * 3, 0);
   camera.lookAt(look);
   camera.rotateZ(Math.sin(t * 0.5) * 0.02);
   sky.position.copy(camera.position);
@@ -460,12 +479,15 @@ function tick() {
   sky.material.uniforms.uFlash.value = f;
   moon.intensity = 1.6 + f * 6;
   post.ps2.uniforms.uFlash.value = f;
+  post.ps2.uniforms.uGain.value = 1.0 + f * 0.35;
   post.ps2.uniforms.uTime.value = t;
 
   lightning.update(dt);
   rain.update(dt, f);
   splash.update(dt);
+  wizard.flash = Math.max(wizard.flash, f * 0.6);
   wizard.update(dt);
+  hud.update(dt, { charge: Math.min(1, state.charge / CONFIG.chargeNeeded), wave: 3.2 + Math.sin(t * 0.7) * 0.9 + Math.sin(t * 1.9) * 0.3, flash: f });
   dialog.update(dt);
   title.update(dt);
 
