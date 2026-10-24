@@ -296,6 +296,17 @@ export class Tower {
     this.panel.onClose = () => { if (this.mode === 'view') this.backToBall(); };
     const range = this.panel.body.querySelector('.tm-range');
     range.addEventListener('input', () => this.setStage(+range.value));
+    // powiększanie renderów
+    const lb = document.getElementById('lightbox');
+    if (!lb.dataset.bound) {
+      lb.dataset.bound = '1';
+      lb.addEventListener('pointerdown', (e) => { e.stopPropagation(); lb.classList.remove('open'); });
+      addEventListener('keydown', (e) => { if (e.key === 'Escape' && lb.classList.contains('open')) { e.stopImmediatePropagation(); lb.classList.remove('open'); } }, true);
+    }
+    this.panel.body.querySelectorAll('.plate img').forEach((img) => img.addEventListener('click', () => {
+      lb.querySelector('img').src = img.src;
+      lb.classList.add('open');
+    }));
     this.panel.body.querySelectorAll('[data-s]').forEach((el) => el.addEventListener('click', () => this.setStage(+el.dataset.s)));
     this.panel.body.querySelectorAll('[data-nav]').forEach((b) => b.addEventListener('click', () => this.view(this.current + +b.dataset.nav)));
 
@@ -489,10 +500,15 @@ export class Tower {
       this.hud.log('KRUK WYSŁANY');
       this.audio.blip(2);
       this.dialog.line({ text: 'Leć, przyjacielu! Wiadomość już w drodze.', hold: true, mood: 'happy' });
-      // przeglądarki pozwalają otworzyć nową kartę tylko chwilę po kliknięciu, więc kruk ma ~1,5 s na odlot
-      await Promise.race([this.raven.depart(), wait(1.5)]);
+      // przeglądarki pozwalają otworzyć nową kartę tylko chwilę po kliknięciu, więc kruk ma ~1 s na odlot
+      await Promise.race([this.raven.depart(), wait(1.0)]);
       if (url.startsWith('mailto:')) location.href = url;
-      else if (!window.open(url, '_blank', 'noopener')) location.href = url;
+      else {
+        // bez flagi 'noopener' w window.open (z nią przeglądarka zwraca null i nie da się sprawdzić, czy karta się otworzyła)
+        const w = window.open(url, '_blank');
+        if (w) w.opener = null;
+        else location.href = url; // blokada wyskakujących okien: otwórz w tej samej karcie
+      }
       this.sending = false;
       // po chwili kruk wraca, gdyby gość chciał wysłać kolejną wiadomość
       setTimeout(() => { if (this.mode === 'evoc' && !this.raven.active) this.raven.summon(); }, 2500);

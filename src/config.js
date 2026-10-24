@@ -33,11 +33,13 @@ export const CONFIG = {
   projects: [
     {
       title: 'Głowa smoka',
-      year: 2026,
+      year: 2024,
       genre: 'Sculpt',
       tools: ['Blender'],
-      desc: 'Rzeźba głowy smoka z rozbudowanym porożem. Tu opisz, jak powstała: inspiracje, pracę nad formą i to, co chciałeś osiągnąć.',
-      model: 'assets/projects/smok-glowa.glb', placeholder: 'golem', images: [], link: '',
+      desc: 'Głowa smoka z rozbudowanym porożem, wyrzeźbiona na podstawie referencji aligatora. Łuski, fałdy skóry i uzębienie oparłem na anatomii prawdziwego gada, żeby fantastyczna forma była wiarygodna.',
+      model: 'assets/projects/smok-glowa.glb', placeholder: 'golem',
+      images: ['assets/projects/smok-1.jpg', 'assets/projects/smok-2.jpg', 'assets/projects/smok-3.jpg'],
+      link: 'https://arturjedrzejczyk.artstation.com/', // podmień na link do tego projektu na ArtStation
       // kolor i połysk gotowego modelu (opcjonalne): color '#rrggbb', roughness 0 = lustro … 1 = mat
       color: '#2e2b2b', roughness: 0.45,
     },
