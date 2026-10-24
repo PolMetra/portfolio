@@ -286,6 +286,7 @@ async function goTower() {
   fade.classList.add('on');
   await wait(0.9);
   mode = 'tower';
+  Audio.setIndoor(true);
   post.renderPass.scene = tower.scene;
   post.renderPass.camera = tower.camera;
   tower.camera.aspect = innerWidth / innerHeight;
@@ -299,6 +300,7 @@ async function goStorm() {
   fade.classList.add('on');
   await wait(0.9);
   mode = 'storm';
+  Audio.setIndoor(false);
   post.renderPass.scene = scene;
   post.renderPass.camera = camera;
   document.getElementById('title').classList.remove('away');
@@ -462,7 +464,7 @@ async function bootSequence() {
     removeEventListener('keydown', go);
     boot.removeEventListener('pointerdown', go);
     Audio.start();
-    Audio.thunder(0.9);
+    Audio.thunder(0.35, 1.5); // odległy pomruk na powitanie — bez straszenia
     flash(1.2);
     boot.classList.add('gone');
     setTimeout(() => boot.remove(), 900);
