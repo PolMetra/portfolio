@@ -474,27 +474,29 @@ export class Tower {
     this.raven.summon();
     this.progress.evoc = true; this.save();
     this.openContact();
-    this.dialog.line({ text: 'Kruk będzie krążył, dopóki nie dasz mu listu. Napisz kilka słów i wyślij, a poleci prosto do mistrza.', hold: true, mood: 'point' });
+    this.dialog.line({ text: 'Kruk będzie krążył, dopóki nie dasz mu wiadomości. Kliknij jeden z linków, a poleci prosto do mistrza.', hold: true, mood: 'point' });
   }
 
   openContact() {
     this.panel.open('KONTAKT', contactHTML(this.config.contact));
     this.panel.onClose = () => { if (this.mode === 'evoc') this.openBook(); };
-    const form = this.panel.body.querySelector('.letter');
-    form.addEventListener('submit', async (e) => {
+    // kliknięcie linku: kruk chwyta wiadomość i odlatuje, potem otwiera się link
+    this.panel.body.querySelectorAll('.raven-link').forEach((a) => a.addEventListener('click', async (e) => {
       e.preventDefault();
-      const f = new FormData(form);
-      const subject = encodeURIComponent('List z Wieży Portfolio');
-      const body = encodeURIComponent(`${f.get('body') || ''}\n\n${f.get('from') || ''}`);
-      const url = `mailto:${this.config.contact.email}?subject=${subject}&body=${body}`;
-      form.querySelector('button').disabled = true;
-      this.hud.log('LIST WYSŁANY');
+      if (this.sending) return;
+      this.sending = true;
+      const url = a.href;
+      this.hud.log('KRUK WYSŁANY');
       this.audio.blip(2);
-      this.dialog.line({ text: 'Leć, przyjacielu! A ty sprawdź swoją skrzynkę pocztową, list czeka tam na ostatni podpis.', hold: true, mood: 'happy' });
-      await this.raven.depart();
-      location.href = url;
-      form.querySelector('button').disabled = false;
-    });
+      this.dialog.line({ text: 'Leć, przyjacielu! Wiadomość już w drodze.', hold: true, mood: 'happy' });
+      // przeglądarki pozwalają otworzyć nową kartę tylko chwilę po kliknięciu, więc kruk ma ~1,5 s na odlot
+      await Promise.race([this.raven.depart(), wait(1.5)]);
+      if (url.startsWith('mailto:')) location.href = url;
+      else if (!window.open(url, '_blank', 'noopener')) location.href = url;
+      this.sending = false;
+      // po chwili kruk wraca, gdyby gość chciał wysłać kolejną wiadomość
+      setTimeout(() => { if (this.mode === 'evoc' && !this.raven.active) this.raven.summon(); }, 2500);
+    }));
   }
 
   // ============================================================

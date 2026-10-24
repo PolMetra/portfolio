@@ -75,13 +75,7 @@ export function aboutHTML(about, revealed) {
 
 export function contactHTML(c) {
   return `
-    <p class="p-desc">Kruk czeka na list. Napisz — odpowiedź przyleci.</p>
-    ${field('E-MAIL', `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`)}
-    ${c.links.map((l) => field(esc(l.label).toUpperCase(), `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.url.replace(/^https?:\/\//, ''))} ↗</a>`)).join('')}
-    <form class="letter">
-      <label>OD KOGO<input name="from" autocomplete="name" placeholder="imię / studio"></label>
-      <label>TREŚĆ LISTU<textarea name="body" rows="5" placeholder="W czym mogę pomóc?"></textarea></label>
-      <button type="submit">[ WYŚLIJ KRUKA ]</button>
-      <small class="muted">otworzy Twój program pocztowy</small>
-    </form>`;
+    <p class="p-desc">Wybierz, dokąd ma polecieć kruk. Zaniesie wiadomość prosto do mnie.</p>
+    ${field('E-MAIL', `<a class="raven-link" href="mailto:${esc(c.email)}">${esc(c.email)}</a>`)}
+    ${c.links.map((l) => field(esc(l.label).toUpperCase(), `<a class="raven-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.url.replace(/^https?:\/\//, ''))} ↗</a>`)).join('')}`;
 }

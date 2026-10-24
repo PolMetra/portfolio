@@ -4,7 +4,7 @@
 export const CONFIG = {
   // Twoje dane (pojawią się pod napisem PORTFOLIO)
   name: 'Artur Jędrzejczyk',
-  role: '3D ARTIST',
+  role: '3D GENERALIST',
   artstation: 'https://www.artstation.com/',
 
   // Imię przewodnika
@@ -83,12 +83,18 @@ export const CONFIG = {
   //  O MNIE — Lewitacja (rozdział V); każdy przedmiot odsłania fragment
   // ==========================================================
   about: [
-    { item: 'KSIĘGA', title: 'Początek', text: 'Tu napisz, jak zaczęła się Twoja przygoda z 3D — pierwszy program, pierwszy model, który Cię nie zawstydził.' },
-    { item: 'KLEPSYDRA', title: 'Doświadczenie', text: 'Lata pracy, studia, kursy, studia gier lub freelance. Krótko: gdzie i nad czym.' },
-    { item: 'FLAKON', title: 'Co mnie napędza', text: 'Style, gry, filmy i artyści, którzy Cię inspirują. Czego szukasz w każdej pracy.' },
-    { item: 'ŚWIECA', title: 'Czego szukam', text: 'Jaką rolę chcesz objąć: environment, props, postacie? Stała praca, kontrakt, współpraca?' },
-    { item: 'PIÓRO', title: 'Poza ekranem', text: 'Jedno lub dwa zdania o Tobie jako człowieku — to zostaje w pamięci rekruterów.' },
+    { item: 'KSIĘGA', title: 'Początek',
+      text: 'Do grafiki 3D przyprowadziły mnie gry i animacja. Od zawsze najbardziej fascynowała mnie możliwość budowania własnych światów, zaludniania ich bohaterami i opowiadania w nich historii.' },
+    { item: 'KLEPSYDRA', title: 'Wykształcenie',
+      text: 'Jestem magistrem sztuki. Ukończyłem grafikę na Akademii Śląskiej, ze specjalizacją Grafika multimedialna i animacja 3D.' },
+    { item: 'FLAKON', title: 'Czym się zajmuję',
+      text: 'Rozwijam się jako 3D generalist: modeluję, teksturuję, oświetlam i renderuję, świadomie próbując różnych obszarów grafiki, by znaleźć swoją specjalizację. Po godzinach buduję własne prototypy gier, żeby poznać pracę w silnikach od środka.' },
+    { item: 'ŚWIECA', title: 'Czego szukam',
+      text: 'Szukam pierwszego doświadczenia w branży: w studiu gier, animacji lub przy produkcji 3D, gdzie mogę się uczyć od lepszych i dokładać swoją cegiełkę do projektu. Równolegle rozwijam własne projekty gier.' },
+    { item: 'PIÓRO', title: 'Poza ekranem',
+      text: 'Tworzę też rękami: projektuję i maluję customowe kurtki jeansowe, a ostatnio zrealizowałem wielkoformatowy mural, który był tematem mojej pracy magisterskiej. Dzięki temu nie boję się skali ani pracy od szkicu do gotowego obiektu.' },
   ],
+
 
   // ==========================================================
   //  KONTAKT — Przywołanie (rozdział VI)

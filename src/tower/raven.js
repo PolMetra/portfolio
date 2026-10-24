@@ -121,6 +121,9 @@ export class Raven {
     this.state = 'depart';
     this.t = 0;
     this.r.letter.visible = true;
+    // zabezpieczenie: przy słabym sprzęcie kruk może lecieć wolniej, więc chowamy go najpóźniej po 3 s
+    clearTimeout(this.goneTimer);
+    this.goneTimer = setTimeout(() => { if (this.state === 'depart') this.hide(); }, 3000);
     return new Promise((res) => { this.onGone = res; });
   }
 
@@ -149,7 +152,7 @@ export class Raven {
       if (this.state === 'arrive' && this.t > 2.5) this.state = 'circle';
       speed = this.state === 'arrive' ? 1.6 : 2.2;
     } else if (this.state === 'depart') {
-      tx = b.right + 400; ty = b.top - 300; speed = 1.4 + this.t;
+      tx = b.right + 400; ty = b.top - 300; speed = 2.6 + this.t * 3;
     }
     const px = this.x, py = this.y;
     this.x += (tx - this.x) * Math.min(1, dt * speed);

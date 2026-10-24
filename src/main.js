@@ -447,11 +447,10 @@ async function bootSequence() {
   const out = boot.querySelector('.boot-log');
   revealBraille(boot.querySelector('.boot-orn'), bandOrnament(40, 4), 1.4);
   const lines = [
-    `KSIĘGA ${W.toUpperCase()}A · TOM I`,
+    `PROTOKÓŁ ${W.toUpperCase()} · v1.0`,
     '────────────────────────────────',
     'PERGAMIN .................... OK',
-    'ATRAMENT KOBALTOWY .......... OK',
-    'CHMURY BURZOWE .............. OK',
+    'CHMURY PRZYGNANE ............ OK',
     'MORZE WZBURZONE ............. OK',
     `CZARODZIEJ ${W.toUpperCase().padEnd(7, ' ')} ........ OBUDZONY`,
   ];
