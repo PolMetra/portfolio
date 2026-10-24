@@ -675,7 +675,8 @@ export class Tower {
     R.ball.visible = !this.viewing;
     R.voidSphere.visible = R.voidMat.opacity > 0.01;
     // mniej poświaty przy oglądaniu, żeby siatka nie rozlewała się w plamę
-    this.post.bloom.strength += ((this.viewing ? 0.35 : 1.0) - this.post.bloom.strength) * k;
+    const stg = this.viewing ? this.models[this.current].stage : -1;
+    this.post.bloom.strength += ((stg === 0 ? 0.08 : this.viewing ? 0.35 : 1.0) - this.post.bloom.strength) * k;
 
     // pył
     const dp = R.dust.geometry.attributes.position;

@@ -87,7 +87,10 @@ function normalize(obj) {
 }
 
 // DRUT: ciemna bryła (zasłania tylne krawędzie) + jasna siatka na wierzchu
-const shadowMat = new THREE.MeshBasicMaterial({ color: 0x03050d, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+const shadowMat = new THREE.MeshBasicMaterial({ color: 0x0a1230, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+// krawędzie konstrukcyjne (ostre załamania) — czytelne nawet przy setkach tysięcy trójkątów
+// kolor poniżej progu poświaty (bloom), żeby gęste krawędzie nie zlewały się w plamę
+const edgeMat = new THREE.LineBasicMaterial({ color: 0xaab4d8, transparent: true, opacity: 0.9, depthWrite: false });
 const wireMat = new THREE.MeshBasicMaterial({ color: 0xdfe3f2, wireframe: true, transparent: true, opacity: 0.95, depthWrite: false });
 // GLINA: jasna, matowa, z wyraźnym cieniowaniem fasetek
 const clayMat = new THREE.MeshStandardMaterial({ color: 0xa8a49c, roughness: 0.85, flatShading: true });
@@ -96,6 +99,7 @@ export class ProjectModel {
   constructor(project, manager) {
     this.root = new THREE.Group();
     this.stage = 2;
+    this.wireMode = project.wireframe || 'auto';
     this.setContent(normalize(BUILDERS[project.placeholder || 'tower']()));
     if (project.model) {
       new GLTFLoader(manager).setMeshoptDecoder(MeshoptDecoder).load(project.model, (gltf) => {
@@ -119,13 +123,16 @@ export class ProjectModel {
 
   setContent(obj) {
     this.content = obj;
+    this.edgesBuilt = false; // nowy model (np. po wczytaniu .glb) liczy krawędzie od nowa
     this.meshes = [];
     obj.traverse((o) => { if (o.isMesh && !o.userData.isWire) this.meshes.push(o); });
     // gęsty sculpt w niskiej rozdzielczości zlewa się w białą plamę,
     // więc im więcej trójkątów, tym delikatniejsza siatka
     const tris = this.meshes.reduce((n, m) => n + (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3, 0);
     const wire = wireMat.clone();
-    wire.opacity = Math.min(0.95, Math.max(0.12, 0.95 * Math.sqrt(2500 / Math.max(tris, 1))));
+    wire.opacity = Math.min(0.6, Math.max(0.04, 0.95 * Math.sqrt(1500 / Math.max(tris, 1))));
+    this.dense = tris > 60000;
+    this.tris = tris;
     for (const m of this.meshes) {
       m.userData.orig = m.material;
       // nakładka z siatką dzielona z tą samą geometrią
@@ -147,17 +154,44 @@ export class ProjectModel {
   // i tło co etap 2 — a prawdziwe kolory dorysowuje nakładka (withTrueColors).
   setStage(s) {
     this.stage = s;
+    if (s === 0) this.buildEdges();
     for (const m of this.meshes) {
       m.material = s === 0 ? shadowMat : clayMat;
-      m.userData.wire.visible = s === 0;
+      // w gęstych modelach siatka trójkątów to szum, kształt niosą krawędzie
+      // w gęstych modelach: krawędzie na częściach z ostrymi załamaniami, siatka trójkątów na gładkich
+      // wireframe: 'edges' w config.js = same krawędzie (dla gęstych modeli hard-surface)
+      m.userData.wire.visible = s === 0 && this.wireMode !== 'edges';
+      if (m.userData.edges) m.userData.edges.visible = s === 0 && (this.edgeRich || !this.dense || this.wireMode === 'edges');
       // przezroczyste elementy (folia, szkło) w siatce i glinie zasłaniałyby wnętrze, więc je chowamy
       const glass = m.userData.orig && m.userData.orig.transparent;
       m.visible = !(glass && s < 2);
     }
   }
 
+  // liczone dopiero przy pierwszym wejściu w etap siatki (gęste modele liczą się chwilę)
+  buildEdges() {
+    if (this.edgesBuilt) return;
+    this.edgesBuilt = true;
+    let segs = 0;
+    for (const m of this.meshes) {
+      const e = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry, this.dense ? 55 : 28), edgeMat);
+      e.userData.isWire = true;
+      e.renderOrder = 3;
+      e.layers.enable(1);
+      m.add(e);
+      m.userData.edges = e;
+      const ms = e.geometry.attributes.position.count / 2;
+      const mt = (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3;
+      m.userData.edgeRich = ms > mt * 0.04; // ta część ma wyraźne krawędzie
+      segs += ms;
+    }
+    // gładki sculpt (np. smok) prawie nie ma ostrych krawędzi: zostaje przy siatce trójkątów
+    this.edgeRich = segs > this.tris * 0.04;
+
+  }
+
   withTrueColors(fn) {
-    for (const m of this.meshes) { m.material = m.userData.orig; m.visible = true; }
+    for (const m of this.meshes) { m.material = m.userData.orig; m.visible = true; if (m.userData.edges) m.userData.edges.visible = false; }
     fn();
     this.setStage(this.stage);
   }
