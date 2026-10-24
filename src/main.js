@@ -13,6 +13,7 @@ const CANCEL = Dialog.CANCEL;
 import { Title } from './ui/title.js';
 import { Hud } from './ui/hud.js';
 import { bandOrnament, revealBraille } from './ui/braille.js';
+import { Tower } from './tower/index.js';
 
 // ============================================================
 //  SCENA
@@ -85,8 +86,16 @@ const wizard = new Wizard(document.getElementById('wizard-ascii'), renderer);
 document.querySelector('.wiz-name').textContent = CONFIG.wizardName;
 document.querySelector('.dlg-who').textContent = CONFIG.wizardName;
 const hud = new Hud();
+
 const dialog = new Dialog(document.getElementById('dialog'), wizard);
 const title = new Title(document.getElementById('title'), CONFIG);
+const fade = document.getElementById('fade');
+let mode = 'storm'; // storm | tower
+const tower = new Tower({
+  renderer, post, dialog, wizard, hud, audio: Audio, config: CONFIG,
+  onExit: () => goStorm(),
+});
+window.__portfolio = { tower, dialog }; // podgląd w konsoli przeglądarki
 const boot = document.getElementById('boot');
 const skipBtn = document.getElementById('skip');
 const muteBtn = document.getElementById('mute');
@@ -250,10 +259,7 @@ async function menu() {
     { label: 'II.   ARTSTATION ↗', value: 'art' },
     { label: 'III.  ZOSTAŃ I PODZIWIAJ BURZĘ', value: 'stay' },
   ] });
-  if (v === 'enter') {
-    await dialog.say([{ text: 'Hmm... drzwi wciąż są zapieczętowane. Kryształowa kula budzi się powoli. Wróć wkrótce!', mood: 'idle' }]);
-    return menu();
-  }
+  if (v === 'enter') { goTower(); return; }
   if (v === 'art') {
     window.open(CONFIG.artstation, '_blank', 'noopener');
     return menu();
@@ -264,7 +270,43 @@ async function menu() {
 
 callBtn.addEventListener('click', (e) => { e.stopPropagation(); menu(); });
 
+// ============================================================
+//  PRZEJŚCIA: morze <-> wnętrze wieży
+// ============================================================
+async function goTower() {
+  if (mode === 'tower') return;
+  dialog.cancel();
+  dialog.close();
+  callBtn.classList.remove('show');
+  Audio.thunder(0.8);
+  flash(1.2);
+  fade.classList.add('on');
+  await wait(0.9);
+  mode = 'tower';
+  post.renderPass.scene = tower.scene;
+  post.renderPass.camera = tower.camera;
+  tower.camera.aspect = innerWidth / innerHeight;
+  tower.camera.updateProjectionMatrix();
+  document.getElementById('title').classList.add('away');
+  fade.classList.remove('on');
+  tower.enter();
+}
+
+async function goStorm() {
+  fade.classList.add('on');
+  await wait(0.9);
+  mode = 'storm';
+  post.renderPass.scene = scene;
+  post.renderPass.camera = camera;
+  document.getElementById('title').classList.remove('away');
+  hud.setChapter('CAP. I — TURRIS');
+  fade.classList.remove('on');
+  await wait(0.6);
+  menu();
+}
+
 function skipToEnd() {
+  if (mode !== 'storm') return;
   if (state.phase === 'summon' || state.phase === 'free' || state.phase === 'boot') return;
   chargeResolve = null;
   dialog.cancel();
@@ -306,7 +348,7 @@ function pointOnPlane(x, y) {
 
 const canvas = renderer.domElement;
 canvas.addEventListener('pointerdown', (e) => {
-  if (state.phase === 'boot') return;
+  if (state.phase === 'boot' || mode !== 'storm') return;
   canvas.setPointerCapture(e.pointerId);
   downInfo = { x: e.clientX, y: e.clientY, t: performance.now(), moved: 0 };
   const p = pointOnPlane(e.clientX, e.clientY);
@@ -319,7 +361,7 @@ canvas.addEventListener('pointerdown', (e) => {
 canvas.addEventListener('pointermove', (e) => {
   mouse.x = (e.clientX / innerWidth) * 2 - 1;
   mouse.y = (e.clientY / innerHeight) * 2 - 1;
-  if (!drawing) return;
+  if (!drawing || mode !== 'storm') return;
   if (downInfo) downInfo.moved += Math.abs(e.movementX || 0) + Math.abs(e.movementY || 0);
   const p = pointOnPlane(e.clientX, e.clientY);
   if (!p) return;
@@ -441,6 +483,17 @@ function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = (state.time += dt);
+
+  if (mode === 'tower') {
+    tower.update(dt, t);
+    post.ps2.uniforms.uTime.value = t;
+    post.ps2.uniforms.uGain.value = 1.0 + tower.flash * 0.25;
+    wizard.update(dt);
+    dialog.update(dt);
+    hud.update(dt, { charge: 1, wave: 0, flash: tower.flash });
+    post.composer.render(dt);
+    return;
+  }
 
   if (state.phase === 'summon') updateSummon(dt);
   if (state.phase !== 'boot') ambientStorm(dt);

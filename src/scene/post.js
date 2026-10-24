@@ -17,6 +17,7 @@ const PrintShader = {
     uFlash: { value: 0 },
     uTime: { value: 0 },
     uGain: { value: 1.0 },
+    uTrue: { value: 0.0 }, // 0 = druk kobaltowy, 1 = prawdziwe kolory (Transmutacja)
     // wartości sRGB (ten przebieg działa już po konwersji koloru)
     uPalette: { value: [
       '#050817', // atrament
@@ -35,6 +36,7 @@ const PrintShader = {
     uniform float uFlash;
     uniform float uTime;
     uniform float uGain;
+    uniform float uTrue;
     uniform vec3 uPalette[5];
     varying vec2 vUv;
 
@@ -68,7 +70,8 @@ const PrintShader = {
       if (i > 1.5) col = uPalette[2];
       if (i > 2.5) col = uPalette[3];
       if (i > 3.5) col = uPalette[4];
-      gl_FragColor = vec4(col, 1.0);
+      vec3 truth = texture2D(tDiffuse, vUv).rgb * (1.0 - dot(q, q) * 0.5);
+      gl_FragColor = vec4(mix(col, truth, uTrue), 1.0);
     }
   `,
 };
@@ -77,7 +80,8 @@ export function createPost(renderer, scene, camera, w, h) {
   const composer = new EffectComposer(renderer);
   composer.setPixelRatio(1);
   composer.setSize(w, h);
-  composer.addPass(new RenderPass(scene, camera));
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
   const bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 1.0, 0.55, 0.72);
   composer.addPass(bloom);
   const after = new AfterimagePass(0.68);
@@ -85,5 +89,5 @@ export function createPost(renderer, scene, camera, w, h) {
   composer.addPass(new OutputPass());
   const ps2 = new ShaderPass(PrintShader);
   composer.addPass(ps2);
-  return { composer, bloom, after, ps2 };
+  return { composer, renderPass, bloom, after, ps2 };
 }

@@ -60,6 +60,37 @@
     <div class="dlg-next">▼ DALEJ</div>
   </section>
 
+  <!-- ===== WNĘTRZE WIEŻY ===== -->
+  <!-- Księga czarów (hub) -->
+  <section id="book" aria-label="Księga czarów">
+    <div class="bk-head">✠ LIBER INCANTATIONUM ✠</div>
+    <div class="bk-sub">Księga Czarów — spis rozdziałów</div>
+    <ol class="spells"></ol>
+    <div class="bk-foot">
+      <button data-act="sea">‹ WRÓĆ NA MORZE</button>
+      <button data-act="unseal">ZDEJMIJ WSZYSTKIE PIECZĘCIE</button>
+    </div>
+  </section>
+
+  <!-- Nawigacja przy kryształowej kuli -->
+  <nav id="ballnav" aria-label="Wizje w kuli">
+    <button data-b="prev" aria-label="Poprzednia wizja">‹</button>
+    <div class="bn-mid"><div class="bn-title"></div><button data-b="gaze">[ WPATRZ SIĘ ]</button></div>
+    <button data-b="next" aria-label="Następna wizja">›</button>
+    <button data-b="book" class="bn-book">‹ KSIĘGA</button>
+  </nav>
+
+  <!-- Panel treści (projekt / umiejętności / o mnie / kontakt) -->
+  <aside id="panel">
+    <div class="pn-head"><span class="pn-cap"></span><span class="pn-line"></span><button class="pn-close">[ ZAMKNIJ × ]</button></div>
+    <div class="pn-body"></div>
+  </aside>
+
+  <div id="game" aria-hidden="true"></div>
+  <canvas id="rune" aria-label="Pole do rysowania kręgu przywołania"></canvas>
+  <div id="tip" aria-hidden="true"></div>
+  <div id="fade" aria-hidden="true"></div>
+
   <!-- EKRAN STARTOWY -->
   <div id="boot">
     <pre class="orn boot-orn" aria-hidden="true"></pre>
