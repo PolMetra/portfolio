@@ -1,11 +1,11 @@
 import * as THREE from 'three';
+import { AsciiView } from './ascii.js';
 
 // Czarodziej jako prawdziwa bryła 3D, renderowana do maleńkiej tekstury
 // i zamieniana na znaki — jak sylwetka ze znaków B / S / c.
 // Gdy zrobisz własny model czarodzieja, podmień buildWizard() na GLTFLoader:
 // shader ASCII zadziała z każdą bryłą.
 
-const RAMP = ['.', '.', ':', 'c', 'o', 's', 'S', '$', 'B'];
 const CELL_ASPECT = 0.6; // szerokość/wysokość znaku przy line-height: 1
 
 const cloth = new THREE.MeshLambertMaterial({ color: 0xb8b8b8, flatShading: true, side: THREE.DoubleSide });
@@ -147,8 +147,7 @@ export class Wizard {
     this.scene.add(this.w.root);
 
     // 2× supersampling: każdy znak to średnia z 2×2 pikseli
-    this.rt = new THREE.WebGLRenderTarget(cols * 2, rows * 2, { depthBuffer: true });
-    this.px = new Uint8Array(cols * 2 * rows * 2 * 4);
+    this.view = new AsciiView(renderer, cols, rows);
   }
 
   set(mood) { this.mood = mood; }
@@ -205,37 +204,7 @@ export class Wizard {
   }
 
   draw() {
-    const r = this.renderer;
-    const prevTarget = r.getRenderTarget();
-    const prevClear = r.getClearAlpha();
-    r.setRenderTarget(this.rt);
-    r.setClearColor(0x000000, 0);
-    r.clear();
-    r.render(this.scene, this.camera);
-    r.readRenderTargetPixels(this.rt, 0, 0, this.cols * 2, this.rows * 2, this.px);
-    r.setRenderTarget(prevTarget);
-    r.setClearAlpha(prevClear);
-
-    const W = this.cols * 2, px = this.px;
-    const lines = [];
-    for (let y = this.rows - 1; y >= 0; y--) { // tekstura jest odwrócona w pionie
-      let line = '';
-      for (let x = 0; x < this.cols; x++) {
-        let lum = 0, a = 0;
-        for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) {
-          const i = ((y * 2 + dy) * W + x * 2 + dx) * 4;
-          lum += (px[i] * 0.3 + px[i + 1] * 0.59 + px[i + 2] * 0.11) / 255;
-          a += px[i + 3] / 255;
-        }
-        lum /= 4; a /= 4;
-        if (a < 0.3) { line += ' '; continue; }
-        // tekstura jest liniowa -> sRGB, potem kontrast
-        let v = Math.pow(lum, 1 / 2.2);
-        v = Math.min(0.999, Math.max(0, (v - 0.1) / 0.72));
-        line += RAMP[Math.floor(v * RAMP.length)];
-      }
-      lines.push(line);
-    }
+    const lines = this.view.render(this.scene, this.camera);
     // iskry wokół kuli przy rzucaniu czaru
     if (this.mood === 'cast') this.sparks(lines);
     this.el.textContent = lines.join('\n');

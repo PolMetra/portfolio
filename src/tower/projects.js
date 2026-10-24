@@ -82,8 +82,11 @@ function normalize(obj) {
   return pivot;
 }
 
-const wireMat = new THREE.MeshBasicMaterial({ color: 0x7f88b0, wireframe: true }); // poniżej progu bloomu
-const clayMat = new THREE.MeshStandardMaterial({ color: 0xd8d4cc, roughness: 0.9, flatShading: true });
+// DRUT: ciemna bryła (zasłania tylne krawędzie) + jasna siatka na wierzchu
+const shadowMat = new THREE.MeshBasicMaterial({ color: 0x03050d, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+const wireMat = new THREE.MeshBasicMaterial({ color: 0xdfe3f2, wireframe: true, transparent: true, opacity: 0.95, depthWrite: false });
+// GLINA: jasna, matowa, z wyraźnym cieniowaniem fasetek
+const clayMat = new THREE.MeshStandardMaterial({ color: 0xf2eee6, roughness: 0.85, flatShading: true });
 
 export class ProjectModel {
   constructor(project, manager) {
@@ -101,7 +104,17 @@ export class ProjectModel {
   setContent(obj) {
     this.content = obj;
     this.meshes = [];
-    obj.traverse((o) => { if (o.isMesh) { o.userData.orig = o.material; this.meshes.push(o); } });
+    obj.traverse((o) => { if (o.isMesh && !o.userData.isWire) this.meshes.push(o); });
+    for (const m of this.meshes) {
+      m.userData.orig = m.material;
+      // nakładka z siatką dzielona z tą samą geometrią
+      const w = new THREE.Mesh(m.geometry, wireMat);
+      w.userData.isWire = true;
+      w.visible = false;
+      w.renderOrder = 2;
+      m.add(w);
+      m.userData.wire = w;
+    }
     this.root.add(obj);
     this.setStage(this.stage);
   }
@@ -109,6 +122,9 @@ export class ProjectModel {
   // 0 drut, 1 glina, 2 dzieło
   setStage(s) {
     this.stage = s;
-    for (const m of this.meshes) m.material = s === 0 ? wireMat : s === 1 ? clayMat : m.userData.orig;
+    for (const m of this.meshes) {
+      m.material = s === 0 ? shadowMat : s === 1 ? clayMat : m.userData.orig;
+      m.userData.wire.visible = s === 0;
+    }
   }
 }

@@ -58,7 +58,7 @@ src/
 | III | Transmutatio | breakdown | suwak drut → glina → dzieło (dzieło w prawdziwych kolorach) |
 | IV | Multiplicatio | umiejętności | kursor się klonuje, klony łapią uciekające zwoje |
 | V | Levitatio | o mnie | przytrzymanie przedmiotu na biurku unosi go |
-| VI | Evocatio | kontakt | krąg przywołania jednym ruchem, kruk, formularz → mail |
+| VI | Evocatio | kontakt | czar przywołuje kruka ASCII (model 3D), który krąży, dopóki nie wyślesz listu; potem odlatuje, a list otwiera się w programie pocztowym |
 
 Każdy czar odpieczętowuje następny, a postęp jest zapamiętywany w przeglądarce.
 „Zdejmij wszystkie pieczęcie” w księdze otwiera wszystko od razu (dla zabieganych).

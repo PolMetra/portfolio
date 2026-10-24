@@ -337,9 +337,14 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
 .scroll.caught { animation: caught .7s forwards; }
 @keyframes caught { to { opacity: 0; transform: scale(2.4); } }
 
-/* Evocatio */
-#rune { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 33; image-rendering: pixelated; pointer-events: none; touch-action: none; }
-#rune.on { pointer-events: auto; cursor: crosshair; }
+/* Evocatio — kruk ASCII */
+#raven {
+  position: fixed; left: 0; top: 0; z-index: 33; margin: 0; pointer-events: none;
+  font-family: var(--ascii); font-size: min(1.3vh, 0.78vw); line-height: 1; white-space: pre;
+  color: var(--bone); text-shadow: 0 0 2px var(--ink), 0 0 5px var(--ink), 0 0 9px rgba(5, 8, 23, .8);
+  opacity: 0; transition: opacity .6s;
+}
+#raven.on { opacity: 1; }
 
 #tip { position: fixed; left: 0; top: 0; z-index: 36; pointer-events: none; font-size: 11px; letter-spacing: .16em; color: var(--cobalt); background: var(--bone); padding: 3px 6px; opacity: 0; transition: opacity .15s; }
 #tip.show { opacity: 1; }
@@ -373,6 +378,7 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
   .sp-dots { display: none; }
   #panel { top: 50vh; bottom: 0; width: 100vw; padding: 0 16px; background: rgba(5, 8, 23, .88); border-top: 1px solid var(--bone-dim); }
   .p-title { font-size: 30px; }
+  #raven { font-size: 5px; }
   #ballnav { top: auto; bottom: 14vh; gap: 8px; }
   .bn-mid { min-width: 0; }
   .bn-title { font-size: 20px; }

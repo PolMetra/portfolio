@@ -182,31 +182,21 @@ export function buildRoom() {
   const itemHalo = new THREE.PointLight(0xc8d2ff, 0, 7, 1.5);
   scene.add(itemHalo);
 
-  // KRUK (dla Przywołania) — prosty low-poly ptak
-  const raven = new THREE.Group();
-  const ravenMat = F(0x14161e);
-  const body = m(new THREE.ConeGeometry(0.5, 2.2, 5), ravenMat);
-  body.rotation.x = Math.PI / 2; raven.add(body);
-  raven.add(m(new THREE.SphereGeometry(0.42, 6, 5), ravenMat, 0, 0.15, 1.1));
-  const beak = m(new THREE.ConeGeometry(0.14, 0.6, 4), F(0x2a2a30), 0, 0.1, 1.65);
-  beak.rotation.x = Math.PI / 2; raven.add(beak);
-  const wingShape = new THREE.Shape();
-  wingShape.moveTo(0, 0.6); wingShape.lineTo(3.2, 0.1); wingShape.lineTo(2.4, -0.4); wingShape.lineTo(0, -0.7);
-  const wingGeo = new THREE.ShapeGeometry(wingShape);
-  wingGeo.rotateX(-Math.PI / 2);
-  const wingMat = F(0x1a1c26, { side: THREE.DoubleSide });
-  const wingL = new THREE.Mesh(wingGeo, wingMat); const wingR = new THREE.Mesh(wingGeo, wingMat);
-  wingR.scale.x = -1;
-  raven.add(wingL, wingR);
-  raven.visible = false;
-  scene.add(raven);
-
   // pył w powietrzu
   const dustN = 300, dustPos = new Float32Array(dustN * 3);
   for (let i = 0; i < dustN; i++) { dustPos[i * 3] = (Math.random() - 0.5) * 44; dustPos[i * 3 + 1] = Math.random() * 30; dustPos[i * 3 + 2] = (Math.random() - 0.5) * 44; }
   const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
   const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xc8d0ff, size: 0.12, transparent: true, opacity: 0.6 }));
   scene.add(dust);
+
+  // TŁO WIZJI: ciemna sfera wokół oglądanego dzieła — reszta komnaty gaśnie,
+  // a model odcina się od tła na każdym etapie transmutacji
+  const voidMat = new THREE.MeshBasicMaterial({ color: 0x02040c, side: THREE.BackSide, transparent: true, opacity: 0, depthWrite: false, fog: false });
+  const voidSphere = new THREE.Mesh(new THREE.SphereGeometry(13, 32, 16), voidMat);
+  voidSphere.position.set(0, 14.2, 0);
+  voidSphere.renderOrder = 5;
+  voidSphere.visible = false;
+  scene.add(voidSphere);
 
   // światło do oglądania dzieła (włączane w trybie Visio)
   const showLight = new THREE.DirectionalLight(0xfff4e0, 0);
@@ -219,8 +209,8 @@ export function buildRoom() {
   scene.add(showRim, showRim.target);
 
   return {
-    showLight, showRim,
+    showLight, showRim, voidSphere, voidMat,
     scene, ball, ballMat, BALL_Y, ballLight, flames, candleLight, deskLight, winLight, skyMat, items, itemHalo, desk,
-    raven, wingL, wingR, dust, win,
+    dust, win,
   };
 }

@@ -3,7 +3,7 @@ import { buildRoom } from './room.js';
 import { ProjectModel } from './projects.js';
 import { Panel, projectHTML, skillsHTML, aboutHTML, contactHTML } from './panels.js';
 import { MultiplyGame } from './multiply.js';
-import { RuneCanvas } from './rune.js';
+import { Raven } from './raven.js';
 import { Dialog } from '../ui/dialog.js';
 
 const CANCEL = Dialog.CANCEL;
@@ -34,6 +34,8 @@ export class Tower {
       view:   { pos: V(2.6, 14.4, 10.5), look: V(2.6, 13.9, 0) },
       desk:   { pos: V(-6.5, 10.5, 3.5), look: V(-15, 5.2, -6) },
       window: { pos: V(0, 14, -8), look: V(0, 15, -25) },
+      // ciemna ściana komnaty — tło, na którym kruk ASCII jest dobrze widoczny
+      wall:   { pos: V(-2, 13, 6), look: V(16, 14, -14) },
     };
     this.camPos = this.stations.door.pos.clone();
     this.camLook = this.stations.door.look.clone();
@@ -56,7 +58,13 @@ export class Tower {
     this.ballnav = document.getElementById('ballnav');
     this.tip = document.getElementById('tip');
     this.layer = document.getElementById('game');
-    this.rune = new RuneCanvas(document.getElementById('rune'), { onResult: (r) => this.onRune(r) });
+    this.raven = new Raven(document.getElementById('raven'), renderer);
+    // kruk lata po wolnej części ekranu: między czarodziejem a panelem (na telefonie nad panelem)
+    this.raven.bounds = () => {
+      if (this.mobile) return { left: 0, right: innerWidth, top: 150, bottom: innerHeight * 0.5 };
+      const wiz = document.getElementById('wizard').getBoundingClientRect();
+      return { left: wiz.right, right: this.panel.el.getBoundingClientRect().left, top: 60, bottom: innerHeight * 0.62 };
+    };
     this.game = new MultiplyGame(this.layer, {
       count: config.skills.length,
       onCatch: (i) => this.onScroll(i),
@@ -78,7 +86,6 @@ export class Tower {
     this.mode = 'idle';
     this.flash = 0;
     this.nextFlash = 3;
-    this.raven = null;
     this.bindPointer();
   }
 
@@ -197,7 +204,7 @@ export class Tower {
     this.ballnav.classList.remove('open');
     this.panel.onClose = null; this.panel.close();
     this.game.stop();
-    this.rune.hide();
+    this.raven.hide();
     document.body.classList.remove('no-cursor');
     this.tip.classList.remove('show');
     this.viewing = false;
@@ -417,53 +424,44 @@ export class Tower {
   // ============================================================
   //  VI. EVOCATIO — krąg przywołania i kruk
   // ============================================================
-  evocatio() {
+  async evocatio() {
     this.mode = 'evoc';
-    this.goal = this.stations.window;
+    this.goal = this.stations.wall;
     this.hud.setChapter('CAP. VI — EVOCATIO');
-    if (this.progress.evoc) { this.openContact(); return; }
-    this.rune.show();
-    this.dialog.line({ text: 'Narysuj krąg przywołania — jednym ruchem, bez odrywania ręki. Musi się zamknąć.', hold: true, mood: 'cast' });
-  }
-
-  onRune(r) {
-    if (this.mode !== 'evoc') return;
-    if (!r.ok) {
-      const why = {
-        short: 'To kropka, nie krąg. Śmielej!',
-        small: 'Za mały. Kruki są wybredne — narysuj większy krąg.',
-        open: 'Krąg musi się zamknąć, inaczej magia wycieka.',
-        crooked: 'Hmm, to bardziej jajko niż krąg. Spróbuj okrąglej.',
-      }[r.why];
-      this.dialog.line({ text: why, hold: true, mood: 'idle' });
-      this.audio.blip(0.6);
-      return;
-    }
-    this.audio.thunder(0.9);
-    this.flash = 0.7;
+    const first = !this.progress.evoc;
+    const r = await this.dialog.say([
+      first
+        ? { text: 'Ostatni czar. Przywołam posłańca, który zaniesie twój list do mistrza.', mood: 'idle' }
+        : { text: 'Kruk znowu? Dobrze, dobrze — zawsze jest głodny listów.', mood: 'idle' },
+      { text: 'EVOCATIO CORVI!', mood: 'cast' },
+    ]);
+    if (r === CANCEL || this.mode !== 'evoc') return;
+    this.audio.thunder(0.7);
+    this.flash = 0.5;
     this.hud.log('EVOCATIO — KRUK PRZYWOŁANY');
-    this.dialog.line({ text: 'Krąg się zamknął… Słyszysz? Coś nadlatuje!', hold: true, mood: 'cast' });
-    this.raven = { t: 0 };
-    this.room.raven.visible = true;
-    setTimeout(() => {
-      if (this.mode !== 'evoc') return;
-      this.rune.hide();
-      this.progress.evoc = true; this.save();
-      this.openContact();
-      this.dialog.say([{ text: 'Kruk zaniesie twój list prosto do mistrza. To ostatnia strona księgi — dziękuję za wizytę, wędrowcze!', hold: true, mood: 'happy' }]);
-    }, 3200);
+    this.raven.summon();
+    this.progress.evoc = true; this.save();
+    this.openContact();
+    this.dialog.line({ text: 'Kruk będzie krążył, dopóki nie dasz mu listu. Napisz kilka słów i wyślij — poleci prosto do mistrza.', hold: true, mood: 'point' });
   }
 
   openContact() {
     this.panel.open('EVOCATIO · KONTAKT', contactHTML(this.config.contact));
     this.panel.onClose = () => { if (this.mode === 'evoc') this.openBook(); };
     const form = this.panel.body.querySelector('.letter');
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const f = new FormData(form);
       const subject = encodeURIComponent('List z Wieży Portfolio');
       const body = encodeURIComponent(`${f.get('body') || ''}\n\n— ${f.get('from') || ''}`);
-      location.href = `mailto:${this.config.contact.email}?subject=${subject}&body=${body}`;
+      const url = `mailto:${this.config.contact.email}?subject=${subject}&body=${body}`;
+      form.querySelector('button').disabled = true;
+      this.hud.log('EPISTULA MISSA — LIST WYSŁANY');
+      this.audio.blip(2);
+      this.dialog.line({ text: 'Leć, przyjacielu! …A ty sprawdź swoją skrzynkę pocztową — list czeka tam na ostatni podpis.', hold: true, mood: 'happy' });
+      await this.raven.depart();
+      location.href = url;
+      form.querySelector('button').disabled = false;
     });
   }
 
@@ -573,23 +571,16 @@ export class Tower {
       if (lifted) { haloOn = true; o.getWorldPosition(R.itemHalo.position); }
     });
     R.itemHalo.intensity += ((haloOn ? 3 : 0) - R.itemHalo.intensity) * 0.1;
-    R.showLight.intensity += ((this.viewing ? 2.6 : 0) - R.showLight.intensity) * k;
-    R.showRim.intensity += ((this.viewing ? 1.4 : 0) - R.showRim.intensity) * k;
-
-    // kruk: z okna, łuk nad komnatą, w stronę kamery
-    if (this.raven) {
-      const r = this.raven, rv = R.raven;
-      r.t += dt;
-      const p = Math.min(1, r.t / 3);
-      const from = V(0, 15, -26), mid = V(-6, 20, -14), to = V(3, 14, -7);
-      const a = from.clone().lerp(mid, p), b = mid.clone().lerp(to, p);
-      const pos = a.lerp(b, p);
-      rv.lookAt(pos.clone().add(pos.clone().sub(rv.position).normalize()));
-      rv.position.copy(pos);
-      const flap = Math.sin(t * 18) * 0.7;
-      R.wingL.rotation.z = flap; R.wingR.rotation.z = -flap;
-      if (r.t > 3.4) { rv.visible = false; this.raven = null; }
-    }
+    R.showLight.intensity += ((this.viewing ? 3.2 : this.mode === 'ball' ? 2.0 : 0) - R.showLight.intensity) * k;
+    R.showRim.intensity += ((this.viewing ? 2.0 : 0) - R.showRim.intensity) * k;
+    // tło wizji: pełne przy drucie i glinie, lżejsze przy gotowym dziele (widać komnatę w barwach)
+    const voidGoal = this.viewing ? (this.trueGoal ? 0.75 : 0.985) : 0;
+    R.voidMat.opacity += (voidGoal - R.voidMat.opacity) * (1 - Math.exp(-dt * 4));
+    // kula oddaje dzieło i chowa się, żeby nie zasłaniać jego podstawy
+    R.ball.visible = !this.viewing;
+    R.voidSphere.visible = R.voidMat.opacity > 0.01;
+    // mniej poświaty przy oglądaniu, żeby siatka nie rozlewała się w plamę
+    this.post.bloom.strength += ((this.viewing ? 0.35 : 1.0) - this.post.bloom.strength) * k;
 
     // pył
     const dp = R.dust.geometry.attributes.position;
@@ -601,6 +592,6 @@ export class Tower {
     dp.needsUpdate = true;
 
     this.game.update(dt, t);
-    this.rune.update(dt, t);
+    this.raven.update(dt, t);
   }
 }
