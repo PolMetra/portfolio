@@ -5,7 +5,7 @@ export const CONFIG = {
   // Twoje dane (pojawią się pod napisem PORTFOLIO)
   name: 'Artur Jędrzejczyk',
   role: '3D GENERALIST',
-  artstation: 'https://www.artstation.com/',
+  artstation: 'https://arturjedrzejczyk.artstation.com/',
 
   // Imię przewodnika
   wizardName: 'M3rlin',
