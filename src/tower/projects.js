@@ -95,6 +95,16 @@ export class ProjectModel {
     this.setContent(normalize(BUILDERS[project.placeholder || 'tower']()));
     if (project.model) {
       new GLTFLoader(manager).load(project.model, (gltf) => {
+        // opcjonalny kolor/połysk z config.js (gdy materiał z Blendera nie ma tekstur)
+        if (project.color || project.roughness !== undefined) {
+          gltf.scene.traverse((o) => {
+            if (!o.isMesh) return;
+            o.material = o.material.clone();
+            if (project.color) o.material.color.set(project.color);
+            if (project.roughness !== undefined) o.material.roughness = project.roughness;
+            if (project.metalness !== undefined) o.material.metalness = project.metalness;
+          });
+        }
         this.root.remove(this.content);
         this.setContent(normalize(gltf.scene));
       }, undefined, () => console.warn('Nie wczytano modelu', project.model));

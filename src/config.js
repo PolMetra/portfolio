@@ -38,6 +38,8 @@ export const CONFIG = {
       tools: ['Blender'],
       desc: 'Rzeźba głowy smoka z rozbudowanym porożem. Tu opisz, jak powstała: inspiracje, pracę nad formą i to, co chciałeś osiągnąć.',
       model: 'assets/projects/smok-glowa.glb', placeholder: 'golem', images: [], link: '',
+      // kolor i połysk gotowego modelu (opcjonalne): color '#rrggbb', roughness 0 = lustro … 1 = mat
+      color: '#2e2b2b', roughness: 0.45,
     },
     {
       title: 'Strażnica Mgieł',
