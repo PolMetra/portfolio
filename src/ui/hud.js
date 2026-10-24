@@ -14,7 +14,7 @@ export class Hud {
     this.acc = 1;
     this.wind = 22;
     addEventListener('pointermove', (e) => {
-      this.coords.textContent = `X ${pad(e.clientX, 4)} · Y ${pad(e.clientY, 4)}`;
+      if (this.coords) this.coords.textContent = `X ${pad(e.clientX, 4)} · Y ${pad(e.clientY, 4)}`;
     });
   }
 

@@ -83,7 +83,6 @@ addEventListener('resize', resize);
 //  UI
 // ============================================================
 const wizard = new Wizard(document.getElementById('wizard-ascii'), renderer);
-document.querySelector('.wiz-name').textContent = CONFIG.wizardName;
 document.querySelector('.dlg-who').textContent = CONFIG.wizardName;
 const hud = new Hud();
 
@@ -254,6 +253,7 @@ async function afterSummon() {
 
 async function menu() {
   callBtn.classList.remove('show');
+  document.body.classList.remove('calm');
   const v = await dialog.line({ text: 'Co robimy dalej, wędrowcze?', choices: [
     { label: 'I.    WEJDŹ DO WIEŻY', value: 'enter' },
     { label: 'II.   ARTSTATION ↗', value: 'art' },
@@ -264,7 +264,10 @@ async function menu() {
     window.open(CONFIG.artstation, '_blank', 'noopener');
     return menu();
   }
+  if (v !== 'stay') return;
+  // tryb "podziwiaj burzę": znikają wszystkie napisy i czarodziej, zostaje tylko przycisk wezwania
   dialog.close();
+  document.body.classList.add('calm');
   callBtn.classList.add('show');
 }
 

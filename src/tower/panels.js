@@ -32,19 +32,19 @@ const field = (label, value) => `<div class="pf"><span class="pf-l">${label}</sp
 
 export function projectHTML(p, i, n) {
   const imgs = p.images && p.images.length
-    ? p.images.map((src, k) => `<figure class="plate"><img src="${esc(src)}" alt="${esc(p.title)} — rycina ${k + 1}" loading="lazy"><figcaption>RYCINA ${ROMAN[k] || k + 1}</figcaption></figure>`).join('')
-    : [1, 2, 3].map((k) => `<figure class="plate empty"><div>tu wstaw render<br><small>assets/projects/…</small></div><figcaption>RYCINA ${ROMAN[k - 1]}</figcaption></figure>`).join('');
+    ? p.images.map((src, k) => `<figure class="plate"><img src="${esc(src)}" alt="${esc(p.title)} — rycina ${k + 1}" loading="lazy"><figcaption>RENDER ${k + 1}</figcaption></figure>`).join('')
+    : [1, 2, 3].map((k) => `<figure class="plate empty"><div>tu wstaw render<br><small>assets/projects/…</small></div><figcaption>RENDER ${k}</figcaption></figure>`).join('');
   return `
-    <div class="p-num">OPUS ${ROMAN[i] || i + 1} / ${ROMAN[n - 1] || n}</div>
+    <div class="p-num">PROJEKT ${i + 1} / ${n}</div>
     <h2 class="p-title">${esc(p.title)}</h2>
-    ${field('ANNUS', p.year)}
-    ${field('GENUS', esc(p.genre))}
-    ${field('INSTRUMENTA', p.tools.map(esc).join(' · '))}
+    ${field('ROK', p.year)}
+    ${field('KATEGORIA', esc(p.genre))}
+    ${field('NARZĘDZIA', p.tools.map(esc).join(' · '))}
     <p class="p-desc">${esc(p.desc)}</p>
     <div class="transmute">
-      <div class="tm-head"><span>TRANSMUTATIO</span><span class="tm-hint">przesuń · klawisze 1 2 3</span></div>
+      <div class="tm-head"><span>ETAPY PRACY</span><span class="tm-hint">przesuń · klawisze 1 2 3</span></div>
       <input type="range" min="0" max="2" step="1" value="0" class="tm-range" aria-label="Transmutacja: drut, glina, dzieło">
-      <div class="tm-stops"><span data-s="0">I. FILUM<small>drut</small></span><span data-s="1">II. LUTUM<small>glina</small></span><span data-s="2">III. OPUS<small>dzieło</small></span></div>
+      <div class="tm-stops"><span data-s="0">1. SIATKA<small>wireframe</small></span><span data-s="1">2. GLINA<small>clay</small></span><span data-s="2">3. GOTOWY<small>final</small></span></div>
     </div>
     <div class="plates">${imgs}</div>
     <div class="p-nav">
@@ -56,7 +56,7 @@ export function projectHTML(p, i, n) {
 
 export function skillsHTML(skills, caught) {
   return `
-    <p class="p-desc">Zwoje schwytane: ${caught.size} / ${skills.length}</p>
+    <p class="p-desc">Zwoje złapane: ${caught.size} / ${skills.length}</p>
     <div class="skills">${skills.map((s, i) => {
       const got = caught.has(i);
       const bar = '/'.repeat(s.level * 4) + '·'.repeat((5 - s.level) * 4);
@@ -76,7 +76,7 @@ export function aboutHTML(about, revealed) {
 export function contactHTML(c) {
   return `
     <p class="p-desc">Kruk czeka na list. Napisz — odpowiedź przyleci.</p>
-    ${field('EPISTULA', `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`)}
+    ${field('E-MAIL', `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`)}
     ${c.links.map((l) => field(esc(l.label).toUpperCase(), `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.url.replace(/^https?:\/\//, ''))} ↗</a>`)).join('')}
     <form class="letter">
       <label>OD KOGO<input name="from" autocomplete="name" placeholder="imię / studio"></label>

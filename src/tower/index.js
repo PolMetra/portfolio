@@ -292,7 +292,7 @@ export class Tower {
     this.hud.setChapter('CAP. III — TRANSMUTATIO');
     this.hud.log(`VISIO: ${p.title.toUpperCase()}`);
 
-    this.panel.open('OPUS · VISIO', projectHTML(p, this.current, this.models.length));
+    this.panel.open('PROJEKT', projectHTML(p, this.current, this.models.length));
     this.panel.onClose = () => { if (this.mode === 'view') this.backToBall(); };
     const range = this.panel.body.querySelector('.tm-range');
     range.addEventListener('input', () => this.setStage(+range.value));
@@ -305,9 +305,9 @@ export class Tower {
 
     if (!this.progress.visio) { this.progress.visio = true; this.save(); this.hud.log('PAGINA III APERTA'); }
     if (firstTime) {
-      await this.dialog.say([{ text: 'Widzisz? Na razie to sam drut — szkielet dzieła. Przesuń suwak TRANSMUTATIO, a zobaczysz, jak powstawało.', hold: true, mood: 'cast' }]);
+      await this.dialog.say([{ text: 'Widzisz? Na razie to sam drut — szkielet dzieła. Przesuń suwak ETAPY PRACY, a zobaczysz, jak powstawało.', hold: true, mood: 'cast' }]);
     } else {
-      this.dialog.line({ text: 'Suwak TRANSMUTATIO pokazuje drogę dzieła: od siatki, przez glinę, do gotowej formy.', hold: true, mood: 'idle' });
+      this.dialog.line({ text: 'Suwak ETAPY PRACY pokazuje drogę dzieła: od siatki, przez glinę, do gotowej formy.', hold: true, mood: 'idle' });
     }
   }
 
@@ -349,15 +349,21 @@ export class Tower {
     this.mode = 'multi';
     this.goal = this.stations.hub;
     this.hud.setChapter('CAP. IV — MULTIPLICATIO');
-    const refresh = () => this.panel.open('ARTES · UMIEJĘTNOŚCI', skillsHTML(this.config.skills, this.caught));
+    const refresh = () => this.panel.open('UMIEJĘTNOŚCI', skillsHTML(this.config.skills, this.caught));
     refresh();
     this.panel.onClose = () => { if (this.mode === 'multi') this.openBook(); };
     this.refreshSkills = refresh;
+    let replay = false;
     if (this.caught.size >= this.config.skills.length) {
-      this.dialog.line({ text: 'Wszystkie zwoje już schwytane. Oto, co potrafi mistrz.', hold: true, mood: 'point' });
-      return;
+      const v = await this.dialog.line({ text: 'Wszystkie zwoje już złapane. Chcesz zagonić je jeszcze raz?', mood: 'point', choices: [
+        { label: 'I.    ZAGRAJ JESZCZE RAZ', value: 'again' },
+        { label: 'II.   WRÓĆ DO KSIĘGI', value: 'book' },
+      ] });
+      if (v === CANCEL || this.mode !== 'multi') return;
+      if (v === 'book') { this.openBook(); return; }
+      replay = true;
     }
-    const r = await this.dialog.say([
+    const r = replay ? await this.dialog.say([{ text: 'Dobrze, wypuszczam zwoje z powrotem. MULTIPLICATIO!', mood: 'cast' }]) : await this.dialog.say([
       { text: 'Zwoje z wiedzą mistrza są płochliwe — uciekają przed każdą ręką.', mood: 'idle' },
       { text: 'Rzucę na ciebie Multiplicatio. Twoja ręka się rozmnoży… ale zwoje boją się tylko tej prawdziwej. Łap je klonami!', mood: 'cast' },
     ]);
@@ -365,7 +371,8 @@ export class Tower {
     this.audio.thunder(0.5);
     this.flash = 0.8;
     document.body.classList.add('no-cursor');
-    this.game.start(this.caught);
+    this.replay = replay;
+    this.game.start(replay ? new Set() : this.caught);
     this.dialog.line({ text: 'MULTIPLICATIO! Prowadź prawdziwy kursor tak, by klony zagoniły zwoje.', hold: true, mood: 'cast' });
   }
 
@@ -378,6 +385,12 @@ export class Tower {
 
   onScrollsDone() {
     document.body.classList.remove('no-cursor');
+    if (this.replay) {
+      this.replay = false;
+      this.audio.chime();
+      this.multiplicatio();
+      return;
+    }
     this.progress.multi = true; this.save();
     this.audio.chime();
     this.hud.log('PAGINA V APERTA — LEVITATIO');
@@ -391,21 +404,33 @@ export class Tower {
   // ============================================================
   //  V. LEVITATIO — unoszenie przedmiotów z biurka
   // ============================================================
-  levitatio() {
+  async levitatio() {
     this.mode = 'levit';
     this.goal = this.stations.desk;
     this.hud.setChapter('CAP. V — LEVITATIO');
     this.refreshAbout();
     this.panel.onClose = () => { if (this.mode === 'levit') this.openBook(); };
-    const all = this.revealed.size >= this.config.about.length;
-    this.dialog.line({
-      text: all ? 'Przedmioty opowiedziały już swoje historie. Możesz je unosić dalej, jeśli lubisz.'
-        : `${this.mobile ? 'Przytrzymaj palec' : 'Przytrzymaj przycisk myszy'} na przedmiocie, a uniesie się i zdradzi fragment historii mistrza.`,
-      hold: true, mood: 'point',
-    });
+    const how = `${this.mobile ? 'Przytrzymaj palec' : 'Przytrzymaj przycisk myszy'} na przedmiocie, a uniesie się i zdradzi fragment historii mistrza.`;
+    if (this.revealed.size >= this.config.about.length) {
+      const v = await this.dialog.line({ text: 'Przedmioty opowiedziały już swoje historie. Zaczarować je od nowa?', mood: 'point', choices: [
+        { label: 'I.    ODŁÓŻ PRZEDMIOTY I ZACZNIJ OD NOWA', value: 'again' },
+        { label: 'II.   ZOSTAW TAK, POUNOSZĘ JE DLA ZABAWY', value: 'play' },
+      ] });
+      if (v === CANCEL || this.mode !== 'levit') return;
+      if (v === 'again') {
+        this.revealed.clear(); this.save();
+        this.refreshAbout();
+        this.audio.blip(0.8);
+        this.dialog.line({ text: 'Fragmenty znów zapieczętowane. ' + how, hold: true, mood: 'cast' });
+        return;
+      }
+      this.dialog.line({ text: 'Śmiało, unoś do woli.', hold: true, mood: 'idle' });
+      return;
+    }
+    this.dialog.line({ text: how, hold: true, mood: 'point' });
   }
 
-  refreshAbout() { this.panel.open('DE MAGISTRO · O MNIE', aboutHTML(this.config.about, this.revealed)); }
+  refreshAbout() { this.panel.open('O MNIE', aboutHTML(this.config.about, this.revealed)); }
 
   revealItem(obj) {
     const idx = this.config.about.findIndex((a) => a.item === obj.userData.name);
@@ -450,7 +475,7 @@ export class Tower {
   }
 
   openContact() {
-    this.panel.open('EVOCATIO · KONTAKT', contactHTML(this.config.contact));
+    this.panel.open('KONTAKT', contactHTML(this.config.contact));
     this.panel.onClose = () => { if (this.mode === 'evoc') this.openBook(); };
     const form = this.panel.body.querySelector('.letter');
     form.addEventListener('submit', async (e) => {

@@ -57,7 +57,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 body.live .hud-txt { opacity: 1; }
 #hud-stats { top: 18px; left: 20px; }
 /* dane burzy (lewy górny róg) i dziennik (prawy górny róg) — na razie ukryte */
-#hud-stats, #hud-log { display: none !important; }
+#hud-stats, #hud-log, #hud-coords, #wizard .field { display: none !important; }
 #hud-log { top: 18px; right: 20px; text-align: right; margin-top: 30px; white-space: pre; }
 #hud-foot { right: 20px; bottom: 16px; display: flex; gap: 28px; }
 #hud-btns { position: fixed; z-index: 40; top: 14px; right: 16px; display: flex; gap: 18px; }
@@ -202,6 +202,12 @@ body.live #wizard { opacity: 1; }
 #boot.ready .boot-start { opacity: 1; animation: blink 1.2s steps(2) infinite; }
 
 @keyframes blink { 50% { opacity: .25; } }
+
+/* ============ TRYB "PODZIWIAJ BURZĘ" ============ */
+body.calm #title, body.calm #wizard, body.calm .hud-txt, body.calm #hud-btns, body.calm #dialog {
+  opacity: 0 !important; pointer-events: none !important; transition: opacity .8s;
+}
+#title, #wizard, #hud-btns { transition: opacity .8s; }
 
 /* ============ WNĘTRZE WIEŻY ============ */
 #title { transition: opacity .8s; }
