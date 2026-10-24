@@ -102,9 +102,9 @@ export const CONFIG = {
   contact: {
     email: 'twoj@email.com',
     links: [
-      { label: 'ArtStation', url: 'https://www.artstation.com/' },
-      { label: 'LinkedIn', url: 'https://www.linkedin.com/' },
-      { label: 'Instagram', url: 'https://www.instagram.com/' },
+      { label: 'ArtStation', url: 'https://arturjedrzejczyk.artstation.com/' },
+      { label: 'LinkedIn', url: 'https://www.linkedin.com/in/artur-jędrzejczyk-25a667335' },
+      { label: 'Instagram', url: 'https://www.instagram.com/walty_customs/' },
     ],
   },
 };
