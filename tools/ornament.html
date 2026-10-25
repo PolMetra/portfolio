@@ -266,7 +266,7 @@ textarea {
           </div>
           <textarea id="code" readonly spellcheck="false" aria-label="Kod ornamentu"></textarea>
           <div class="card-foot">
-            <label class="name" for="vname">nazwa <input type="text" id="vname" value="titleBand"></label>
+            <span class="name">wklej w miejsce <code>null</code></span>
             <button id="copy" class="c">Kopiuj</button>
             <span class="toast" id="toast" role="status"></span>
           </div>
@@ -274,7 +274,7 @@ textarea {
       </div>
 
       <div class="howto">
-        <span><b>Jak wstawić do portfolio:</b> skopiuj tablicę JS i wklej ją do <code>src/ui/ornaments.js</code> w miejsce <code>titleBand = null</code> (wić na stronie tytułowej) lub <code>bootBand = null</code> (ekran startowy).</span>
+        <span><b>Jak wstawić do portfolio:</b> skopiuj tablicę JS i w pliku <code>src/ui/ornaments.js</code> zamień nią samo słowo <code>null</code> w linii <code>export const titleBand = null;</code> (wić na stronie tytułowej) lub <code>export const bootBand = null;</code> (ekran startowy). Początek linii zostaw bez zmian.</span>
         <span>Dolna wić strony tytułowej powstaje sama, jako odbicie górnej.</span>
       </div>
     </main>
@@ -550,8 +550,7 @@ textarea {
   function updateOutput() {
     const r = toRows();
     if (!revealing) { $('prev-top').textContent = r.join('\n'); $('prev-bot').textContent = flipRows(r).join('\n'); }
-    const name = ($('vname').value.trim() || 'ornament').replace(/[^\w$]/g, '_');
-    $('code').value = fmt === 'txt' ? r.join('\n') : `export const ${name} = [\n${r.map((l) => `  '${l}',`).join('\n')}\n];\n`;
+    $('code').value = fmt === 'txt' ? r.join('\n') : `[\n${r.map((l) => `  '${l}',`).join('\n')}\n]`;
   }
   function reveal(el, rowsArr, dur) {
     const cells = [];
@@ -711,7 +710,6 @@ textarea {
   // podgląd i eksport
   $('modes').addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (!b) return; mode = b.dataset.mode; press('modes', 'data-mode', mode); updateOutput(); });
   $('fmts').addEventListener('click', (e) => { const b = e.target.closest('[data-fmt]'); if (!b) return; fmt = b.dataset.fmt; press('fmts', 'data-fmt', fmt); updateOutput(); });
-  $('vname').addEventListener('input', updateOutput);
   $('fs').addEventListener('input', (e) => { fontPx = +e.target.value; $('fs-o').textContent = fontPx + ' px'; for (const id of ['prev-top', 'prev-bot']) $(id).style.fontSize = fontPx + 'px'; });
   $('replay').addEventListener('click', async () => {
     const r = toRows(); revealing++;
