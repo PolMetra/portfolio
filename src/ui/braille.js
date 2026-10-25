@@ -114,6 +114,17 @@ function render(cols, rows, draw, flip = false) {
 export const bandOrnament = (cols = 46, rows = 4, flip = false) => render(cols, rows, drawBand, flip);
 export const vineOrnament = (cols = 8, rows = 40) => render(cols, rows, drawVine);
 
+// odbicie góra-dół gotowego ornamentu (kolejność wierszy i kropki w każdym znaku)
+export function flipBraille(rows) {
+  return rows.slice().reverse().map((r) => [...r].map((ch) => {
+    const c = ch.charCodeAt(0) - 0x2800;
+    if (c < 0 || c > 0xff) return ch;
+    let o = 0;
+    for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 2; dx++) if (c & BITS[dy][dx]) o |= BITS[3 - dy][dx];
+    return String.fromCharCode(0x2800 + o);
+  }).join(''));
+}
+
 // stopniowe "wyrysowanie" ornamentu: znaki pojawiają się w losowej kolejności
 export function revealBraille(el, rows, duration = 1.6) {
   const cells = [];

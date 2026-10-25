@@ -1,4 +1,5 @@
-import { bandOrnament, revealBraille } from './braille.js';
+import { bandOrnament, flipBraille, revealBraille } from './braille.js';
+import { titleBand } from './ornaments.js';
 
 // Strona tytułowa księgi: drzeworytowy inicjał, gotyckie "Portfolio",
 // imię, rok rzymskimi cyframi i wici z kropek brajla.
@@ -23,8 +24,8 @@ export class Title {
     root.querySelector('.t-anno').textContent = `ANNO DOMINI ${roman(new Date().getFullYear())}`;
     this.ornTop = root.querySelector('.orn-top');
     this.ornBot = root.querySelector('.orn-bot');
-    this.band = bandOrnament(44, 4);
-    this.bandFlip = bandOrnament(44, 4, true);
+    this.band = titleBand || bandOrnament(44, 4);
+    this.bandFlip = titleBand ? flipBraille(titleBand) : bandOrnament(44, 4, true);
     this.shown = false;
   }
 

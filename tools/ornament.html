@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuźnia Ornamentów</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=IM+Fell+English+SC&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Układ: wąska kolumna narzędzi po lewej (jak marginalia), szeroki pulpit z płótnem kropek,
+   pod nim podgląd w rozmiarze strony i eksport. Jedna, ciemna paleta portfolio. */
+:root {
+  --ink: #050817;
+  --ink-2: #0a1230;
+  --deep: #0b1d73;
+  --cobalt: #1838c0;
+  --sky: #5f7ee6;
+  --bone: #ece5d3;
+  --bone-dim: rgba(236, 229, 211, .62);
+  --bone-faint: rgba(236, 229, 211, .28);
+  --line: rgba(236, 229, 211, .16);
+  --gothic: 'Grenze Gotisch', 'UnifrakturMaguntia', Georgia, serif;
+  --caps: 'IM Fell English SC', Georgia, 'Times New Roman', serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'DejaVu Sans Mono', 'Segoe UI Symbol', monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--ink); color: var(--bone); }
+body {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(24, 56, 192, .28), transparent 60%),
+    var(--ink);
+  min-height: 100%;
+}
+.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 18px; }
+
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+header h1 { margin: 0; font-family: var(--gothic); font-weight: 700; font-size: clamp(28px, 4vw, 40px); letter-spacing: .01em; line-height: 1; text-wrap: balance; }
+header h1 span { color: var(--sky); }
+header p { margin: 0; color: var(--bone-dim); max-width: 62ch; font-size: 12px; }
+
+.desk { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 820px) { .desk { grid-template-columns: minmax(0, 1fr); } }
+
+aside { display: grid; gap: 16px; }
+fieldset { margin: 0; padding: 0; border: 0; display: grid; gap: 8px; min-width: 0; }
+legend, .lbl { font-family: var(--caps); font-size: 13px; letter-spacing: .14em; color: var(--bone-dim); padding: 0; margin-bottom: 2px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+
+button, .btn {
+  font: inherit; font-size: 12px; color: var(--bone);
+  background: rgba(5, 8, 23, .35);
+  border: 1px solid rgba(236, 229, 211, .3);
+  padding: 7px 8px; cursor: pointer; text-align: left;
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  white-space: nowrap; transition: border-color .15s, background .15s;
+}
+button:hover, .btn:hover { border-color: rgba(236, 229, 211, .65); background: rgba(24, 56, 192, .18); }
+button:focus-visible, input:focus-visible, select:focus-visible, .btn:focus-within { outline: 1px solid var(--sky); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--deep); border-color: var(--sky); }
+button kbd { font: inherit; font-size: 10px; color: var(--bone-faint); }
+button[aria-pressed="true"] kbd { color: var(--bone-dim); }
+button.c { justify-content: center; }
+button:disabled { opacity: .35; cursor: default; }
+
+label.row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 8px; font-size: 12px; color: var(--bone-dim); }
+label.row output { color: var(--bone); font-variant-numeric: tabular-nums; }
+input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--sky); }
+input[type=number], input[type=text], select {
+  font: inherit; font-size: 12px; color: var(--bone); background: var(--ink-2);
+  border: 1px solid rgba(236, 229, 211, .3); padding: 6px 8px; width: 100%; min-width: 0;
+}
+.size { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; align-items: end; }
+.size label { display: grid; gap: 3px; font-size: 11px; color: var(--bone-dim); }
+.size span.x { padding-bottom: 7px; color: var(--bone-faint); }
+.hint { font-size: 11px; color: var(--bone-faint); margin: 0; }
+.btn input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+main { display: grid; gap: 18px; min-width: 0; }
+.board { border: 1px solid var(--line); background: var(--ink); position: relative; min-width: 0; }
+.board-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--bone-dim); }
+.board-head b { color: var(--bone); font-weight: 500; font-variant-numeric: tabular-nums; }
+.stage { overflow: auto; padding: 14px; display: grid; place-items: center; min-height: 220px; }
+canvas#view { display: block; touch-action: none; cursor: crosshair; image-rendering: pixelated; }
+.board-foot { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--line); }
+.board-foot button { flex: 0 0 auto; }
+
+.out { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 980px) { .out { grid-template-columns: minmax(0, 1fr); } }
+.card { border: 1px solid var(--line); display: grid; grid-template-rows: auto 1fr auto; min-width: 0; }
+.card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.card-head .lbl { margin: 0; }
+.seg { display: inline-flex; }
+.seg button { padding: 4px 8px; font-size: 11px; }
+.seg button + button { border-left: 0; }
+
+.page {
+  background: radial-gradient(ellipse at 50% 40%, rgba(11, 29, 115, .55), transparent 75%), var(--ink);
+  padding: 22px 14px; overflow-x: auto; display: grid; justify-items: center; gap: 10px; min-height: 160px; align-content: center;
+}
+.page pre { margin: 0; font-family: var(--mono); line-height: 1; white-space: pre; color: var(--bone); opacity: .9; }
+.page .demo { font-family: var(--gothic); font-size: 34px; line-height: 1; color: var(--bone); }
+.page .demo-sub { font-family: var(--caps); letter-spacing: .3em; font-size: 11px; color: var(--bone-dim); }
+
+textarea {
+  width: 100%; min-height: 170px; resize: vertical; margin: 0; border: 0; padding: 12px;
+  font-family: var(--mono); font-size: 11px; line-height: 1.25; white-space: pre; overflow: auto;
+  color: var(--bone); background: var(--ink-2);
+}
+.card-foot { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--line); align-items: center; }
+.card-foot .name { flex: 1 1 140px; display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--bone-dim); }
+.card-foot .name input { flex: 1; }
+.toast { font-size: 11px; color: var(--sky); min-height: 1em; }
+
+.howto { color: var(--bone-dim); font-size: 12px; border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 4px; }
+.howto code { color: var(--bone); background: var(--ink-2); padding: 1px 4px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Kuźnia <span>Ornamentów</span></h1>
+    <p>Rysuj kropkami brajla jak w portfolio. Każdy znak to blok 2 × 4 kropki. Lustro powiela każdy ruch, a gotowy ornament kopiujesz jako tekst lub tablicę JS.</p>
+  </header>
+
+  <div class="desk">
+    <aside>
+      <fieldset>
+        <legend>Narzędzie</legend>
+        <div class="grid2" id="tools">
+          <button data-tool="pen" aria-pressed="true">Pióro <kbd>B</kbd></button>
+          <button data-tool="erase">Gumka <kbd>E</kbd></button>
+          <button data-tool="line">Linia <kbd>L</kbd></button>
+          <button data-tool="ring">Koło <kbd>O</kbd></button>
+          <button data-tool="curl">Zawijas <kbd>S</kbd></button>
+          <button data-tool="leaf">Liść <kbd>F</kbd></button>
+        </div>
+        <p class="hint" id="tool-hint">Przeciągnij, by rysować. Prawy przycisk myszy ściera.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Lustro</legend>
+        <div class="grid2" id="mirrors">
+          <button data-mirror="none">Brak</button>
+          <button data-mirror="h" aria-pressed="true">Lewo ↔ prawo</button>
+          <button data-mirror="v">Góra ↕ dół</button>
+          <button data-mirror="hv">Cztery strony</button>
+          <button data-mirror="k" style="grid-column: 1 / -1">Kalejdoskop (8 odbić) <kbd>M</kbd></button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Pióro</legend>
+        <label class="row" for="size">Grubość <output id="size-o">1 kropka</output>
+          <input type="range" id="size" min="0" max="4" step="1" value="0">
+        </label>
+        <label class="row" for="turns">Zwoje zawijasa <output id="turns-o">1.5</output>
+          <input type="range" id="turns" min="0.5" max="3" step="0.1" value="1.5">
+        </label>
+        <div class="grid2">
+          <button id="dir" class="c" aria-label="Kierunek zawijasa">Kierunek ↻</button>
+          <button id="grid-t" class="c" aria-pressed="true">Siatka znaków</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Rozmiar w znakach</legend>
+        <div class="size">
+          <label for="cols">kolumny<input type="number" id="cols" min="4" max="140" value="44"></label>
+          <span class="x">×</span>
+          <label for="rows">wiersze<input type="number" id="rows" min="1" max="60" value="4"></label>
+        </div>
+        <div class="grid3">
+          <button class="c" data-preset="44x4">44×4</button>
+          <button class="c" data-preset="24x12">24×12</button>
+          <button class="c" data-preset="8x40">8×40</button>
+        </div>
+        <p class="hint">44 × 4 to rozmiar wici ze strony tytułowej.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Wzór na start</legend>
+        <div class="grid2">
+          <button data-tpl="band">Wić pozioma</button>
+          <button data-tpl="vine">Wić pionowa</button>
+          <button data-tpl="rosette">Rozeta</button>
+          <button data-tpl="frame">Ramka</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Obraz na kropki</legend>
+        <label class="btn" for="img">Wczytaj obraz (PNG, JPG) <span>↥</span><input type="file" id="img" accept="image/*"></label>
+        <div id="img-ctl" hidden>
+          <label class="row" for="thr">Próg jasności <output id="thr-o">128</output>
+            <input type="range" id="thr" min="10" max="245" value="128">
+          </label>
+          <div class="grid2">
+            <button id="inv" class="c" aria-pressed="false">Odwróć</button>
+            <button id="img-done" class="c">Zatwierdź</button>
+          </div>
+        </div>
+        <p class="hint">Najlepiej działają sylwetki i rysunki kreską.</p>
+      </fieldset>
+    </aside>
+
+    <main>
+      <section class="board" aria-label="Płótno">
+        <div class="board-head">
+          <span>płótno · <b id="dims">44 × 4 znaki · 88 × 16 kropek</b></span>
+          <span id="pos">kropka —</span>
+        </div>
+        <div class="stage" id="stage"><canvas id="view" aria-label="Płótno do rysowania kropkami"></canvas></div>
+        <div class="board-foot">
+          <button id="undo" class="c">Cofnij <kbd>Ctrl Z</kbd></button>
+          <button id="redo" class="c">Ponów</button>
+          <button id="flip-h" class="c">Odbij ↔</button>
+          <button id="flip-v" class="c">Odbij ↕</button>
+          <button id="invert" class="c">Negatyw</button>
+          <button id="trim" class="c">Przytnij brzegi</button>
+          <button id="clear" class="c">Wyczyść</button>
+        </div>
+      </section>
+
+      <div class="out">
+        <section class="card" aria-label="Podgląd">
+          <div class="card-head">
+            <span class="lbl">Podgląd na stronie</span>
+            <span class="seg" id="modes">
+              <button data-mode="braille" aria-pressed="true">Brajl</button>
+              <button data-mode="ascii">ASCII</button>
+            </span>
+          </div>
+          <div class="page" id="page">
+            <pre id="prev-top"></pre>
+            <div class="demo">Portfolio</div>
+            <div class="demo-sub">KSIĘGA PRAC</div>
+            <pre id="prev-bot"></pre>
+          </div>
+          <div class="card-foot">
+            <button id="replay" class="c">Odtwórz wyrysowanie</button>
+            <label class="row" for="fs" style="flex:1 1 140px">Wielkość <output id="fs-o">10 px</output>
+              <input type="range" id="fs" min="6" max="22" value="10">
+            </label>
+          </div>
+        </section>
+
+        <section class="card" aria-label="Eksport">
+          <div class="card-head">
+            <span class="lbl">Eksport</span>
+            <span class="seg" id="fmts">
+              <button data-fmt="js" aria-pressed="true">Tablica JS</button>
+              <button data-fmt="txt">Tekst</button>
+            </span>
+          </div>
+          <textarea id="code" readonly spellcheck="false" aria-label="Kod ornamentu"></textarea>
+          <div class="card-foot">
+            <label class="name" for="vname">nazwa <input type="text" id="vname" value="titleBand"></label>
+            <button id="copy" class="c">Kopiuj</button>
+            <span class="toast" id="toast" role="status"></span>
+          </div>
+        </section>
+      </div>
+
+      <div class="howto">
+        <span><b>Jak wstawić do portfolio:</b> skopiuj tablicę JS i wklej ją do <code>src/ui/ornaments.js</code> w miejsce <code>titleBand = null</code> (wić na stronie tytułowej) lub <code>bootBand = null</code> (ekran startowy).</span>
+        <span>Dolna wić strony tytułowej powstaje sama, jako odbicie górnej.</span>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ---------- stałe ----------
+  const BITS = [[0x01, 0x08], [0x02, 0x10], [0x04, 0x20], [0x40, 0x80]];
+  const RAMP = [' ', '.', ':', 'c', 'o', 's', 'S', '$', 'B'];   // ta sama skala co w AsciiView
+  const BLANK = '⠀';
+  const THRESHOLD = 110;                                         // jak canvasToBraille w braille.js
+  const SIZES = [{ w: 0, t: '1 kropka' }, { w: 1.15, t: 'cienka' }, { w: 1.8, t: 'średnia' }, { w: 2.6, t: 'gruba' }, { w: 3.6, t: 'bardzo gruba' }];
+  const C = { ink: '#050817', bone: '#ece5d3', sky: '#5f7ee6', cobalt: '#1838c0' };
+  const HINTS = {
+    pen: 'Przeciągnij, by rysować. Prawy przycisk myszy ściera.',
+    erase: 'Przeciągnij, by ścierać kropki.',
+    line: 'Przeciągnij od początku do końca linii.',
+    ring: 'Przeciągnij od środka na zewnątrz.',
+    curl: 'Przeciągnij od środka zawijasa; kąt wyznacza początek spirali.',
+    leaf: 'Przeciągnij od nasady liścia do czubka.',
+  };
+
+  // ---------- stan ----------
+  const $ = (id) => document.getElementById(id);
+  const src = document.createElement('canvas');
+  const sx = src.getContext('2d', { willReadFrequently: true });
+  const view = $('view'), vx = view.getContext('2d');
+  let cols = 44, rows = 4, W = 88, H = 16;
+  let tool = 'pen', mirror = 'h', sizeIdx = 0, turns = 1.5, dir = 1, showGrid = true;
+  let mode = 'braille', fmt = 'js', fontPx = 10;
+  let mask = new Uint8Array(0);
+  let pitch = 8;
+  let undoStack = [], redoStack = [];
+  let hover = null;
+  let img = null, imgThr = 128, imgInv = false, imgBase = null;
+
+  // ---------- pomocnicze ----------
+  const snap = () => ({ cols, rows, data: sx.getImageData(0, 0, W, H) });
+  function pushUndo() { undoStack.push(snap()); if (undoStack.length > 60) undoStack.shift(); redoStack = []; syncUndo(); }
+  function restore(s) { setDims(s.cols, s.rows, false); sx.putImageData(s.data, 0, 0); }
+  function syncUndo() { $('undo').disabled = !undoStack.length; $('redo').disabled = !redoStack.length; }
+
+  function setDims(c, r, keep = true) {
+    const old = keep ? (() => { const k = document.createElement('canvas'); k.width = W; k.height = H; k.getContext('2d').drawImage(src, 0, 0); return k; })() : null;
+    cols = c; rows = r; W = c * 2; H = r * 4;
+    src.width = W; src.height = H;
+    if (old) sx.drawImage(old, Math.round((W - old.width) / 4) * 2, Math.round((H - old.height) / 8) * 4);
+    $('cols').value = c; $('rows').value = r;
+    layout();
+  }
+
+  // przekształcenia lustra w przestrzeni kropek
+  function mirrors() {
+    const id = [1, 0, 0, 1, 0, 0], h = [-1, 0, 0, 1, W, 0], v = [1, 0, 0, -1, 0, H], hv = [-1, 0, 0, -1, W, H];
+    if (mirror === 'none') return [id];
+    if (mirror === 'h') return [id, h];
+    if (mirror === 'v') return [id, v];
+    if (mirror === 'hv') return [id, h, v, hv];
+    const cx = W / 2, cy = H / 2;
+    const d = [0, 1, 1, 0, cx - cy, cy - cx];               // odbicie po przekątnej
+    const mul = (a, b) => [a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3], a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5]];
+    return [id, h, v, hv, d, mul(h, d), mul(v, d), mul(hv, d)];
+  }
+
+  function stamp(fn, erase = false) {
+    sx.save();
+    sx.globalCompositeOperation = erase ? 'destination-out' : 'source-over';
+    sx.strokeStyle = sx.fillStyle = '#fff';
+    sx.lineCap = sx.lineJoin = 'round';
+    sx.lineWidth = SIZES[sizeIdx].w || 1.15;
+    for (const m of mirrors()) { sx.setTransform(...m); fn(sx); }
+    sx.restore();
+  }
+
+  // ---------- kształty (te same co w braille.js) ----------
+  function spiral(ctx, cx, cy, r, t, d = 1, start = 0) {
+    ctx.beginPath();
+    const steps = Math.max(20, Math.round(60 * t));
+    for (let i = 0; i <= steps; i++) {
+      const k = i / steps, a = start + d * k * t * Math.PI * 2, rr = r * (1 - k * 0.85);
+      const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.stroke();
+  }
+  function leaf(ctx, x, y, len, ang) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+    ctx.beginPath(); ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(len * 0.5, -len * 0.35, len, 0);
+    ctx.quadraticCurveTo(len * 0.5, len * 0.35, 0, 0);
+    ctx.stroke(); ctx.restore();
+  }
+  // linia piksel w piksel (grubość „1 kropka”)
+  function pixLine(ctx, a, b) {
+    let x0 = Math.floor(a.x), y0 = Math.floor(a.y); const x1 = Math.floor(b.x), y1 = Math.floor(b.y);
+    const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sxs = x0 < x1 ? 1 : -1, sys = y0 < y1 ? 1 : -1;
+    let err = dx + dy;
+    for (;;) {
+      ctx.fillRect(x0, y0, 1, 1);
+      if (x0 === x1 && y0 === y1) break;
+      const e2 = 2 * err;
+      if (e2 >= dy) { err += dy; x0 += sxs; }
+      if (e2 <= dx) { err += dx; y0 += sys; }
+    }
+  }
+  function segment(ctx, a, b) {
+    if (!SIZES[sizeIdx].w) return pixLine(ctx, a, b);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    ctx.beginPath(); ctx.arc(b.x, b.y, Math.max(0.6, SIZES[sizeIdx].w / 2), 0, Math.PI * 2); ctx.fill();
+  }
+  function shape(ctx, t, a, b) {
+    const dxy = Math.hypot(b.x - a.x, b.y - a.y), ang = Math.atan2(b.y - a.y, b.x - a.x);
+    if (t === 'line') { if (SIZES[sizeIdx].w) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); } else pixLine(ctx, a, b); }
+    if (t === 'ring') { ctx.beginPath(); ctx.arc(a.x, a.y, Math.max(0.5, dxy), 0, Math.PI * 2); ctx.stroke(); }
+    if (t === 'curl') spiral(ctx, a.x, a.y, Math.max(1, dxy), turns, dir, ang);
+    if (t === 'leaf') leaf(ctx, a.x, a.y, Math.max(1, dxy), ang);
+  }
+
+  // ---------- wzory startowe ----------
+  const TPL = {
+    band(ctx, W, H) {
+      const cx = W / 2, cy = H / 2;
+      ctx.beginPath(); ctx.arc(cx, cy, H * 0.16, 0, Math.PI * 2); ctx.stroke();
+      for (let i = 0; i < 4; i++) leaf(ctx, cx, cy, H * 0.42, i * Math.PI / 2 + Math.PI / 4);
+      for (const s of [1, -1]) {
+        ctx.save(); ctx.translate(cx, 0); ctx.scale(s, 1); ctx.translate(-cx, 0);
+        ctx.beginPath();
+        const x0 = cx + H * 0.5, x1 = W - 4;
+        for (let x = x0; x <= x1; x += 1) {
+          const k = (x - x0) / (x1 - x0), y = cy + Math.sin(k * Math.PI * 3) * H * 0.18 * (1 - k * 0.5);
+          x === x0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        for (let j = 0; j < 3; j++) {
+          const k = (j + 0.25) / 3, x = x0 + k * (x1 - x0), up = j % 2 === 0 ? -1 : 1;
+          spiral(ctx, x + H * 0.12, cy + up * H * 0.22, H * 0.2 * (1 - k * 0.35), 1.4, up, up > 0 ? -Math.PI / 2 : Math.PI / 2);
+          leaf(ctx, x - H * 0.08, cy - up * H * 0.12, H * 0.28, up * -0.9 + Math.PI);
+        }
+        spiral(ctx, x1 - H * 0.14, cy, H * 0.14, 1.2, 1, Math.PI);
+        ctx.restore();
+      }
+    },
+    vine(ctx, W, H) {
+      const cx = W / 2;
+      ctx.beginPath();
+      for (let y = 4; y < H - 4; y++) { const x = cx + Math.sin(y / H * Math.PI * 4) * W * 0.12; y === 4 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      ctx.stroke();
+      const n = Math.max(2, Math.floor(H / (W * 0.9)));
+      for (let i = 0; i < n; i++) {
+        const y = (i + 0.5) / n * H, side = i % 2 ? 1 : -1, x = cx + Math.sin(y / H * Math.PI * 4) * W * 0.12;
+        spiral(ctx, x + side * W * 0.24, y, W * 0.22, 1.5, side, side > 0 ? Math.PI : 0);
+        leaf(ctx, x, y + W * 0.15, W * 0.3, side > 0 ? Math.PI * 0.75 : Math.PI * 0.25);
+      }
+      spiral(ctx, cx + W * 0.1, 10, W * 0.25, 1.6, 1, Math.PI);
+    },
+    rosette(ctx, W, H) {
+      const cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 2;
+      ctx.beginPath(); ctx.arc(cx, cy, R * 0.18, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, R * 0.95, 0, Math.PI * 2); ctx.stroke();
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        leaf(ctx, cx + Math.cos(a) * R * 0.2, cy + Math.sin(a) * R * 0.2, R * 0.55, a);
+        const b = a + Math.PI / 8;
+        spiral(ctx, cx + Math.cos(b) * R * 0.66, cy + Math.sin(b) * R * 0.66, R * 0.2, 1.3, i % 2 ? 1 : -1, b + Math.PI);
+      }
+    },
+    frame(ctx, W, H) {
+      const m = 2.5;
+      ctx.strokeRect(m, m, W - m * 2, H - m * 2);
+      ctx.strokeRect(m + 3, m + 3, W - m * 2 - 6, H - m * 2 - 6);
+      const r = Math.min(W, H) * 0.14;
+      for (const [x, y, s] of [[m + 3, m + 3, 0], [W - m - 3, m + 3, 1], [W - m - 3, H - m - 3, 2], [m + 3, H - m - 3, 3]]) {
+        spiral(ctx, x, y, r, 1.4, 1, s * Math.PI / 2 + Math.PI / 4);
+        leaf(ctx, x, y, r * 1.5, s * Math.PI / 2 + Math.PI / 4);
+      }
+    },
+  };
+  function applyTemplate(name) {
+    pushUndo();
+    sx.clearRect(0, 0, W, H);
+    sx.save(); sx.strokeStyle = '#fff'; sx.lineWidth = 1.15; sx.lineCap = 'round';
+    TPL[name](sx, W, H);
+    sx.restore();
+    render(true);
+  }
+
+  // ---------- odczyt kropek ----------
+  function readMask() {
+    const d = sx.getImageData(0, 0, W, H).data;
+    mask = new Uint8Array(W * H);
+    for (let i = 0; i < W * H; i++) mask[i] = d[i * 4 + 3] > THRESHOLD ? 1 : 0;
+  }
+  function toRows(m = mode) {
+    const out = [];
+    for (let y = 0; y < H; y += 4) {
+      let line = '';
+      for (let x = 0; x < W; x += 2) {
+        let code = 0, n = 0;
+        for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 2; dx++) if (mask[(y + dy) * W + x + dx]) { code |= BITS[dy][dx]; n++; }
+        line += m === 'braille' ? (code ? String.fromCharCode(0x2800 + code) : BLANK) : RAMP[n];
+      }
+      out.push(line);
+    }
+    return out;
+  }
+  // odbicie góra-dół na poziomie znaków (jak dolna wić strony tytułowej)
+  function flipRows(rowsArr) {
+    if (mode !== 'braille') return rowsArr.slice().reverse();
+    return rowsArr.slice().reverse().map((r) => [...r].map((ch) => {
+      const c = ch.charCodeAt(0) - 0x2800; let o = 0;
+      for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 2; dx++) if (c & BITS[dy][dx]) o |= BITS[3 - dy][dx];
+      return o ? String.fromCharCode(0x2800 + o) : BLANK;
+    }).join(''));
+  }
+
+  // ---------- rysowanie widoku ----------
+  function layout() {
+    const box = $('stage').clientWidth - 28;
+    pitch = Math.max(3, Math.min(22, Math.floor(box / W)));
+    const hMax = Math.max(260, innerHeight * 0.6);
+    if (H * pitch > hMax) pitch = Math.max(3, Math.floor(hMax / H));
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    view.width = W * pitch * dpr; view.height = H * pitch * dpr;
+    view.style.width = W * pitch + 'px'; view.style.height = H * pitch + 'px';
+    vx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    $('dims').textContent = `${cols} × ${rows} znaki · ${W} × ${H} kropek`;
+  }
+
+  function drawView() {
+    const p = pitch;
+    vx.fillStyle = C.ink; vx.fillRect(0, 0, W * p, H * p);
+    if (showGrid) {
+      // co drugi znak lekko podbarwiony: widać, gdzie kończy się każdy znak brajla
+      vx.fillStyle = 'rgba(24,56,192,.10)';
+      for (let cy = 0; cy < rows; cy++) for (let cx = 0; cx < cols; cx++) if ((cx + cy) % 2 === 0) vx.fillRect(cx * 2 * p, cy * 4 * p, 2 * p, 4 * p);
+    }
+    // osie lustra
+    vx.save(); vx.strokeStyle = 'rgba(95,126,230,.55)'; vx.setLineDash([4, 4]); vx.lineWidth = 1;
+    const ax = (mirror === 'h' || mirror === 'hv' || mirror === 'k'), ay = (mirror === 'v' || mirror === 'hv' || mirror === 'k');
+    if (ax) { vx.beginPath(); vx.moveTo(W * p / 2 + .5, 0); vx.lineTo(W * p / 2 + .5, H * p); vx.stroke(); }
+    if (ay) { vx.beginPath(); vx.moveTo(0, H * p / 2 + .5); vx.lineTo(W * p, H * p / 2 + .5); vx.stroke(); }
+    if (mirror === 'k') {
+      const cx = W * p / 2, cy = H * p / 2, L = Math.max(W, H) * p;
+      vx.beginPath(); vx.moveTo(cx - L, cy - L); vx.lineTo(cx + L, cy + L); vx.moveTo(cx - L, cy + L); vx.lineTo(cx + L, cy - L); vx.stroke();
+    }
+    vx.restore();
+    // kropki
+    const rOn = p * 0.36, rOff = Math.max(0.6, p * 0.07);
+    vx.fillStyle = 'rgba(236,229,211,.13)';
+    vx.beginPath();
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!mask[y * W + x]) { vx.moveTo((x + .5) * p + rOff, (y + .5) * p); vx.arc((x + .5) * p, (y + .5) * p, rOff, 0, Math.PI * 2); }
+    vx.fill();
+    vx.fillStyle = C.bone;
+    vx.beginPath();
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (mask[y * W + x]) { vx.moveTo((x + .5) * p + rOn, (y + .5) * p); vx.arc((x + .5) * p, (y + .5) * p, rOn, 0, Math.PI * 2); }
+    vx.fill();
+    // podgląd pióra z odbiciami
+    if (hover && !drag && (tool === 'pen' || tool === 'erase')) {
+      vx.save(); vx.strokeStyle = tool === 'erase' ? 'rgba(236,229,211,.6)' : C.sky; vx.lineWidth = 1;
+      const r = Math.max(0.5, (SIZES[sizeIdx].w || 1) / 2) * p;
+      for (const m of mirrors()) {
+        const hx = m[0] * hover.x + m[2] * hover.y + m[4], hy = m[1] * hover.x + m[3] * hover.y + m[5];
+        vx.beginPath(); vx.arc(hx * p, hy * p, r, 0, Math.PI * 2); vx.stroke();
+      }
+      vx.restore();
+    }
+  }
+
+  // ---------- wyjście ----------
+  let revealing = 0;
+  function updateOutput() {
+    const r = toRows();
+    if (!revealing) { $('prev-top').textContent = r.join('\n'); $('prev-bot').textContent = flipRows(r).join('\n'); }
+    const name = ($('vname').value.trim() || 'ornament').replace(/[^\w$]/g, '_');
+    $('code').value = fmt === 'txt' ? r.join('\n') : `export const ${name} = [\n${r.map((l) => `  '${l}',`).join('\n')}\n];\n`;
+  }
+  function reveal(el, rowsArr, dur) {
+    const cells = [];
+    rowsArr.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== BLANK && ch !== ' ') cells.push([y, x]); }));
+    cells.sort(() => Math.random() - 0.5);
+    const blank = mode === 'braille' ? BLANK : ' ';
+    const grid = rowsArr.map((r) => [...r].map(() => blank));
+    const t0 = performance.now();
+    return new Promise((res) => {
+      const step = () => {
+        const k = Math.min(1, (performance.now() - t0) / (dur * 1000));
+        const n = Math.floor(k * cells.length);
+        for (let i = 0; i < n; i++) { const [y, x] = cells[i]; grid[y][x] = rowsArr[y][x]; }
+        el.textContent = grid.map((r) => r.join('')).join('\n');
+        k < 1 ? requestAnimationFrame(step) : res();
+      };
+      step();
+    });
+  }
+
+  let saveT = 0;
+  function render(save = false) {
+    readMask(); drawView(); updateOutput();
+    if (save) { clearTimeout(saveT); saveT = setTimeout(saveDraft, 400); }
+  }
+  function saveDraft() {
+    try { localStorage.setItem('kuznia.draft', JSON.stringify({ cols, rows, url: src.toDataURL() })); } catch (e) { /* bez zapisu */ }
+  }
+  function loadDraft() {
+    try {
+      const d = JSON.parse(localStorage.getItem('kuznia.draft') || 'null');
+      if (!d || !d.url) return false;
+      setDims(d.cols, d.rows, false);
+      const im = new Image();
+      im.onload = () => { sx.drawImage(im, 0, 0); render(); };
+      im.src = d.url;
+      return true;
+    } catch (e) { return false; }
+  }
+
+  // ---------- wskaźnik ----------
+  let drag = null;
+  const toDot = (e) => { const b = view.getBoundingClientRect(); return { x: (e.clientX - b.left) / pitch, y: (e.clientY - b.top) / pitch }; };
+  view.addEventListener('contextmenu', (e) => e.preventDefault());
+  view.addEventListener('pointerdown', (e) => {
+    view.setPointerCapture(e.pointerId);
+    const p = toDot(e);
+    const t = e.button === 2 ? 'erase' : tool;
+    pushUndo();
+    drag = { t, a: p, last: p, base: sx.getImageData(0, 0, W, H) };
+    if (t === 'pen' || t === 'erase') stamp((c) => segment(c, p, p), t === 'erase');
+    render();
+  });
+  view.addEventListener('pointermove', (e) => {
+    const p = toDot(e);
+    hover = p;
+    $('pos').textContent = `kropka ${Math.floor(p.x) + 1}, ${Math.floor(p.y) + 1} · znak ${Math.floor(p.x / 2) + 1}, ${Math.floor(p.y / 4) + 1}`;
+    if (!drag) { drawView(); return; }
+    if (drag.t === 'pen' || drag.t === 'erase') {
+      const a = drag.last; stamp((c) => segment(c, a, p), drag.t === 'erase'); drag.last = p;
+    } else {
+      sx.putImageData(drag.base, 0, 0);
+      const a = drag.a; stamp((c) => shape(c, drag.t, a, p));
+    }
+    render();
+  });
+  const end = () => { if (drag) { drag = null; render(true); } };
+  view.addEventListener('pointerup', end);
+  view.addEventListener('pointercancel', end);
+  view.addEventListener('pointerleave', () => { hover = null; if (!drag) drawView(); $('pos').textContent = 'kropka —'; });
+
+  // ---------- przyciski ----------
+  const press = (group, attr, val) => document.querySelectorAll(`#${group} [${attr}]`).forEach((b) => b.setAttribute('aria-pressed', String(b.getAttribute(attr) === val)));
+  function setTool(t) { tool = t; press('tools', 'data-tool', t); $('tool-hint').textContent = HINTS[t]; }
+  function setMirror(m) { mirror = m; press('mirrors', 'data-mirror', m); drawView(); }
+  $('tools').addEventListener('click', (e) => { const b = e.target.closest('[data-tool]'); if (b) setTool(b.dataset.tool); });
+  $('mirrors').addEventListener('click', (e) => { const b = e.target.closest('[data-mirror]'); if (b) setMirror(b.dataset.mirror); });
+  $('size').addEventListener('input', (e) => { sizeIdx = +e.target.value; $('size-o').textContent = SIZES[sizeIdx].t; });
+  $('turns').addEventListener('input', (e) => { turns = +e.target.value; $('turns-o').textContent = turns.toFixed(1); });
+  $('dir').addEventListener('click', () => { dir = -dir; $('dir').textContent = dir > 0 ? 'Kierunek ↻' : 'Kierunek ↺'; });
+  $('grid-t').addEventListener('click', () => { showGrid = !showGrid; $('grid-t').setAttribute('aria-pressed', String(showGrid)); drawView(); });
+
+  function resize(c, r) {
+    c = Math.max(4, Math.min(140, c | 0)); r = Math.max(1, Math.min(60, r | 0));
+    if (c === cols && r === rows) return;
+    pushUndo(); setDims(c, r, true); render(true);
+  }
+  $('cols').addEventListener('change', () => resize(+$('cols').value, rows));
+  $('rows').addEventListener('change', () => resize(cols, +$('rows').value));
+  document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => { const [c, r] = b.dataset.preset.split('x').map(Number); resize(c, r); }));
+  document.querySelectorAll('[data-tpl]').forEach((b) => b.addEventListener('click', () => applyTemplate(b.dataset.tpl)));
+
+  function undo() { if (!undoStack.length) return; redoStack.push(snap()); restore(undoStack.pop()); syncUndo(); render(true); }
+  function redo() { if (!redoStack.length) return; undoStack.push(snap()); restore(redoStack.pop()); syncUndo(); render(true); }
+  $('undo').addEventListener('click', undo);
+  $('redo').addEventListener('click', redo);
+  function transformAll(m) {
+    pushUndo();
+    const k = document.createElement('canvas'); k.width = W; k.height = H; k.getContext('2d').drawImage(src, 0, 0);
+    sx.clearRect(0, 0, W, H); sx.save(); sx.setTransform(...m); sx.drawImage(k, 0, 0); sx.restore(); render(true);
+  }
+  $('flip-h').addEventListener('click', () => transformAll([-1, 0, 0, 1, W, 0]));
+  $('flip-v').addEventListener('click', () => transformAll([1, 0, 0, -1, 0, H]));
+  $('invert').addEventListener('click', () => {
+    pushUndo(); readMask();
+    const d = sx.createImageData(W, H);
+    for (let i = 0; i < W * H; i++) { d.data[i * 4] = d.data[i * 4 + 1] = d.data[i * 4 + 2] = 255; d.data[i * 4 + 3] = mask[i] ? 0 : 255; }
+    sx.putImageData(d, 0, 0); render(true);
+  });
+  $('clear').addEventListener('click', () => { pushUndo(); sx.clearRect(0, 0, W, H); render(true); });
+  $('trim').addEventListener('click', () => {
+    readMask();
+    let x0 = cols, x1 = -1, y0 = rows, y1 = -1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (mask[y * W + x]) {
+      const cx = x >> 1, cy = y >> 2; x0 = Math.min(x0, cx); x1 = Math.max(x1, cx); y0 = Math.min(y0, cy); y1 = Math.max(y1, cy);
+    }
+    if (x1 < 0) return toast('Płótno jest puste.');
+    const nc = Math.max(4, x1 - x0 + 1), nr = y1 - y0 + 1;
+    if (nc === cols && nr === rows) return toast('Brzegi są już przycięte.');
+    pushUndo();
+    const part = sx.getImageData(x0 * 2, y0 * 4, nc * 2, nr * 4);
+    setDims(nc, nr, false); sx.putImageData(part, 0, 0); render(true);
+  });
+
+  // obraz na kropki
+  function applyImage() {
+    if (!img) return;
+    sx.putImageData(imgBase, 0, 0);
+    const k = document.createElement('canvas'); k.width = W; k.height = H;
+    const kx = k.getContext('2d', { willReadFrequently: true });
+    const s = Math.min(W / img.width, H / img.height), w = img.width * s, h = img.height * s;
+    kx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+    const d = kx.getImageData(0, 0, W, H).data, o = sx.getImageData(0, 0, W, H);
+    for (let i = 0; i < W * H; i++) {
+      if (d[i * 4 + 3] < 128) continue;
+      const lum = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+      if (imgInv ? lum < imgThr : lum > imgThr) { o.data[i * 4] = o.data[i * 4 + 1] = o.data[i * 4 + 2] = o.data[i * 4 + 3] = 255; }
+    }
+    sx.putImageData(o, 0, 0); render();
+  }
+  $('img').addEventListener('change', (e) => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      const im = new Image();
+      im.onload = () => { pushUndo(); img = im; imgBase = sx.getImageData(0, 0, W, H); $('img-ctl').hidden = false; applyImage(); };
+      im.onerror = () => toast('Nie udało się odczytać obrazu. Spróbuj PNG lub JPG.');
+      im.src = rd.result;
+    };
+    rd.readAsDataURL(f);
+    e.target.value = '';
+  });
+  $('thr').addEventListener('input', (e) => { imgThr = +e.target.value; $('thr-o').textContent = imgThr; applyImage(); });
+  $('inv').addEventListener('click', () => { imgInv = !imgInv; $('inv').setAttribute('aria-pressed', String(imgInv)); applyImage(); });
+  $('img-done').addEventListener('click', () => { img = null; $('img-ctl').hidden = true; render(true); });
+
+  // podgląd i eksport
+  $('modes').addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (!b) return; mode = b.dataset.mode; press('modes', 'data-mode', mode); updateOutput(); });
+  $('fmts').addEventListener('click', (e) => { const b = e.target.closest('[data-fmt]'); if (!b) return; fmt = b.dataset.fmt; press('fmts', 'data-fmt', fmt); updateOutput(); });
+  $('vname').addEventListener('input', updateOutput);
+  $('fs').addEventListener('input', (e) => { fontPx = +e.target.value; $('fs-o').textContent = fontPx + ' px'; for (const id of ['prev-top', 'prev-bot']) $(id).style.fontSize = fontPx + 'px'; });
+  $('replay').addEventListener('click', async () => {
+    const r = toRows(); revealing++;
+    const a = reveal($('prev-top'), r, 1.8);
+    await new Promise((res) => setTimeout(res, 900));
+    await reveal($('prev-bot'), flipRows(r), 1.8); await a;
+    revealing--; updateOutput();
+  });
+  let toastT = 0;
+  function toast(t) { $('toast').textContent = t; clearTimeout(toastT); toastT = setTimeout(() => { $('toast').textContent = ''; }, 2200); }
+  $('copy').addEventListener('click', () => {
+    const ta = $('code');
+    const fallback = () => { ta.focus(); ta.select(); toast('Zaznaczone. Skopiuj skrótem Ctrl C.'); };
+    try {
+      navigator.clipboard.writeText(ta.value).then(() => toast('Skopiowano.'), fallback);
+    } catch (e) { fallback(); }
+  });
+
+  // klawiatura
+  addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea, select')) return;
+    const k = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
+    if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); redo(); return; }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const map = { b: 'pen', e: 'erase', l: 'line', o: 'ring', s: 'curl', f: 'leaf' };
+    if (map[k]) setTool(map[k]);
+    if (k === 'm') { const order = ['none', 'h', 'v', 'hv', 'k']; setMirror(order[(order.indexOf(mirror) + 1) % order.length]); }
+  });
+  addEventListener('resize', () => { layout(); drawView(); });
+
+  // ---------- start ----------
+  setDims(44, 4, false);
+  syncUndo();
+  if (!loadDraft()) {
+    sx.save(); sx.strokeStyle = '#fff'; sx.lineWidth = 1.15; sx.lineCap = 'round'; TPL.band(sx, W, H); sx.restore();
+    render();
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); drawView(); });
+})();
+</script>
+</body>
+</html>

@@ -13,6 +13,7 @@ const CANCEL = Dialog.CANCEL;
 import { Title } from './ui/title.js';
 import { Hud } from './ui/hud.js';
 import { bandOrnament, revealBraille } from './ui/braille.js';
+import { bootBand } from './ui/ornaments.js';
 import { Tower } from './tower/index.js';
 
 // ============================================================
@@ -445,7 +446,7 @@ function wait(s) { return new Promise((r) => setTimeout(r, s * 1000)); }
 
 async function bootSequence() {
   const out = boot.querySelector('.boot-log');
-  revealBraille(boot.querySelector('.boot-orn'), bandOrnament(40, 4), 1.4);
+  revealBraille(boot.querySelector('.boot-orn'), bootBand || bandOrnament(40, 4), 1.4);
   const lines = [
     `PROTOKÓŁ ${W.toUpperCase()} · v1.0`,
     '────────────────────────────────',
