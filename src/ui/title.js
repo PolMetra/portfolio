@@ -1,8 +1,7 @@
-import { bandOrnament, flipBraille, revealBraille } from './braille.js';
 import { IlluminatedFrame } from './frame.js';
 
 // Strona tytułowa księgi: drzeworytowy inicjał, gotyckie "Portfolio",
-// imię, rok rzymskimi cyframi i wici z kropek brajla.
+// imię, rola i rok rzymskimi cyframi w iluminowanej ramie.
 
 function roman(n) {
   const map = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
@@ -17,15 +16,11 @@ function titleCase(s) {
 }
 
 export class Title {
-  constructor(root, config, titleBand = null) {
+  constructor(root, config) {
     this.root = root;
     root.querySelector('.t-name').textContent = titleCase(config.name);
     root.querySelector('.t-role').textContent = config.role;
     root.querySelector('.t-anno').textContent = `ANNO DOMINI ${roman(new Date().getFullYear())}`;
-    this.ornTop = root.querySelector('.orn-top');
-    this.ornBot = root.querySelector('.orn-bot');
-    this.band = titleBand || bandOrnament(44, 4);
-    this.bandFlip = titleBand ? flipBraille(titleBand) : bandOrnament(44, 4, true);
     this.frame = new IlluminatedFrame(root.querySelector('.page'), { band: 46, bandMobile: 28, seed: 3 });
     this.shown = false;
   }
@@ -35,16 +30,12 @@ export class Title {
     this.shown = true;
     this.root.classList.add('show');
     this.frame.reveal(2.4);
-    revealBraille(this.ornTop, this.band, 1.8);
-    setTimeout(() => revealBraille(this.ornBot, this.bandFlip, 1.8), 1600);
   }
 
   showInstant() {
     this.shown = true;
     this.root.classList.add('show', 'instant');
     this.frame.showInstant();
-    this.ornTop.textContent = this.band.join('\n');
-    this.ornBot.textContent = this.bandFlip.join('\n');
   }
 
   update() {}

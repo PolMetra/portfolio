@@ -1,6 +1,6 @@
 // Iluminowana rama z kropek brajla, jak bordiura w średniowiecznym rękopisie:
 // wijąca się łodyga z liśćmi bluszczu, zawijasami i jagodami na włoskowatych
-// szypułkach, niebieskie kwiaty, medaliony w narożnikach i tarcze z literami AJ.
+// szypułkach, niebieskie kwiaty i medaliony w narożnikach (tarcze AJ opcjonalnie: shields: true).
 // Rama dopasowuje się sama do wielkości elementu (także po zmianie okna).
 
 import { canvasToBraille, revealBraille } from './braille.js';
@@ -115,7 +115,7 @@ function vineSegment(v, a, L, hb, R) {
 export class IlluminatedFrame {
   constructor(host, opts = {}) {
     this.host = host;
-    this.o = { band: 50, bandMobile: 32, gap: 8, seed: 11, sideShields: 'auto', ...opts };
+    this.o = { band: 50, bandMobile: 32, gap: 8, seed: 11, shields: false, sideShields: 'auto', ...opts };
     host.classList.add('has-ill');
     this.root = document.createElement('div');
     this.root.className = 'ill';
@@ -171,15 +171,15 @@ export class IlluminatedFrame {
     // tarcze: na górze i dole zawsze, po bokach gdy jest miejsce
     const shields = [];
     const sh = by * 1.16, sw = sh * 0.8;
-    shields.push({ x: Wp / 2, y: by / 2, w: sw, h: sh }, { x: Wp / 2, y: Hp - by / 2, w: sw, h: sh });
+    if (this.o.shields) shields.push({ x: Wp / 2, y: by / 2, w: sw, h: sh }, { x: Wp / 2, y: Hp - by / 2, w: sw, h: sh });
     const ssw = bx * 0.98, ssh = ssw * 1.22;
-    const sideOk = this.o.sideShields === true || (this.o.sideShields === 'auto' && Hp - 2 * by > ssh * 4);
+    const sideOk = this.o.shields && (this.o.sideShields === true || (this.o.sideShields === 'auto' && Hp - 2 * by > ssh * 4));
     if (sideOk) shields.push({ x: bx / 2, y: Hp / 2, w: ssw, h: ssh }, { x: Wp - bx / 2, y: Hp / 2, w: ssw, h: ssh });
 
     // segmenty bordiury (każdy w parze lustrzanej)
     const R = rng(this.o.seed + cols * 7 + rows * 13);
     const hbT = by * 0.46, hbS = bx * 0.46;
-    const gT = sw / 2 + by * 0.18, gS = sideOk ? ssh / 2 + bx * 0.18 : 0;
+    const gT = this.o.shields ? sw / 2 + by * 0.18 : 0, gS = sideOk ? ssh / 2 + bx * 0.18 : 0;
     const LT = Wp / 2 - gT - bx, LS = Hp / 2 - gS - by;
     const seg = (m, L, hb, seed) => {
       for (const c of [v, a]) { c.save(); c.transform(...m); }

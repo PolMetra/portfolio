@@ -140,6 +140,7 @@ body.live #wizard { opacity: 1; }
 }
 .page {
   position: relative; padding: 12px 30px 10px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px; /* wszystkie wiersze w równych odstępach */
   border: 1px solid transparent;
   transition: border-color 1.2s .2s;
 }
@@ -163,7 +164,7 @@ body.live #wizard { opacity: 1; }
 
 .t-pre { font-family: 'Fell', serif; font-size: clamp(13px, 1.1vw, 17px); letter-spacing: .38em; color: var(--bone-dim); }
 .t-main {
-  margin: 4px 0 0; font-weight: 400; line-height: .95;
+  margin: 0; font-weight: 400; line-height: .95;
   font-family: 'Fraktur', 'Grenze', serif; font-size: clamp(46px, 5.4vw, 88px); color: var(--bone);
   text-shadow: 3px 3px 0 var(--ink);
   display: flex; align-items: flex-end; justify-content: center;
@@ -182,7 +183,8 @@ body.live #wizard { opacity: 1; }
   font-family: 'Grenze', serif; font-weight: 600; font-size: clamp(26px, 2.6vw, 40px); letter-spacing: .04em;
   color: var(--bone); text-shadow: 2px 2px 0 var(--ink);
 }
-.t-meta { margin-top: 6px; display: flex; flex-direction: column; white-space: nowrap; align-items: center; gap: 4px; color: var(--bone-dim); }
+.t-meta { display: contents; color: var(--bone-dim); }
+.t-role, .t-anno { white-space: nowrap; color: var(--bone-dim); }
 .t-role { font-size: 11px; letter-spacing: .45em; }
 .t-dot { font-size: 12px; }
 .t-anno { font-family: 'Fell', serif; font-size: 13px; letter-spacing: .28em; }
@@ -211,7 +213,10 @@ body.live #wizard { opacity: 1; }
   cursor: pointer; transition: opacity .9s;
 }
 #boot.gone { opacity: 0; pointer-events: none; }
-.boot-orn { font-size: 13px; }
+.boot-roots { position: relative; }
+.boot-roots pre { margin: 0; font-family: var(--ascii); font-size: 13px; line-height: 1; white-space: pre; }
+.br-roots { color: var(--ink); opacity: .9; }
+.br-crystal { position: absolute; inset: 0; color: var(--bone); text-shadow: 0 0 6px rgba(236, 229, 211, .55), 0 0 16px rgba(95, 126, 230, .9); }
 .boot-title { font-family: 'Grenze', serif; font-weight: 600; font-size: clamp(44px, 6vw, 80px); color: var(--bone); text-shadow: 3px 3px 0 var(--deep); }
 .boot-log { margin: 0; min-height: 7.5em; min-width: 340px; font-size: 12px; line-height: 1.55; letter-spacing: .08em; color: var(--bone-dim); }
 .boot-start { opacity: 0; font-size: 13px; letter-spacing: .3em; color: var(--bone); text-align: center; }
@@ -483,9 +488,7 @@ body.calm #tower-nav { opacity: 0 !important; pointer-events: none !important; }
   #hud-stats { font-size: 9px; top: 12px; left: 12px; }
   #hud-btns { top: 8px; right: 10px; gap: 12px; }
   #title { top: 15vh; }
-  .page { padding: 10px 14px 8px; max-width: calc(100vw - 24px); }
-  .t-meta { flex-direction: column; align-items: center; gap: 2px; }
-  .t-dot { display: none; }
+  .page { padding: 10px 14px 8px; max-width: calc(100vw - 24px); gap: 10px; }
   .t-role, .t-anno { white-space: nowrap; font-size: 10px; }
   .orn, .ill pre { font-size: 7px; }
   #wizard { --fs: 3.4px; left: 6px; bottom: auto; top: 47vh; }
@@ -493,7 +496,7 @@ body.calm #tower-nav { opacity: 0 !important; pointer-events: none !important; }
   #dialog { left: 14px; right: 14px; width: auto; bottom: 3vh; }
   .dlg-text { font-size: 15px; min-height: 4.5em; }
   .boot-log { min-width: 0; font-size: 10px; }
-  .boot-orn { font-size: 7px; }
+  .boot-roots pre { font-size: 9px; }
 }
 
 @media (max-width: 760px) {

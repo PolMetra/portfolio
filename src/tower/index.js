@@ -58,7 +58,7 @@ export class Tower {
     // DOM
     this.panel = new Panel(document.getElementById('panel'));
     this.book = document.getElementById('book');
-    this.bookFrame = new IlluminatedFrame(this.book, { band: 40, bandMobile: 24, seed: 9, sideShields: true });
+    this.bookFrame = new IlluminatedFrame(this.book, { band: 40, bandMobile: 24, seed: 9 });
     this.ballnav = document.getElementById('ballnav');
     this.tip = document.getElementById('tip');
     this.layer = document.getElementById('game');
