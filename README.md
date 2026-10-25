@@ -56,7 +56,7 @@ src/
 | I | Burza | rysowanie błyskawic wynurza wieżę |
 | II | Projekty | kryształowa kula, strzałki, kliknięcie = wpatrzenie się |
 | III | Etapy pracy | suwak siatka → glina → gotowy model (w prawdziwych kolorach) |
-| IV | Umiejętności | kliknięcie tworzy klon kursora (Win98) w innym polu, klon powtarza ruchy; zwój łapie się, przytrzymując klon nad nim |
+| IV | Umiejętności | kliknięcie stawia kopię kursora (Win98) w wybranym kafelku; z innego kafelka kopia powtarza ruchy; uskrzydlony zwój łapie się, przytrzymując kopię nad nim |
 | V | O mnie | przytrzymanie przedmiotu na biurku unosi go i odsłania fragment |
 | VI | Kontakt | czarodziej przywołuje kruka ASCII, który krąży, dopóki nie wyślesz listu |
 

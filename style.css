@@ -350,10 +350,22 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
 .seg.used span { color: var(--bone-dim); }
 .seg.pulse { animation: segpulse .5s; }
 @keyframes segpulse { from { background: rgba(236, 229, 211, .2); } }
-.scroll { margin: -14px 0 0 -22px; font-size: 20px; color: var(--bone); background: var(--deep); padding: 2px 5px 4px; border: 1px solid var(--bone-dim); }
+.scroll {
+  --glow: 0; margin: -16px 0 0 -26px; padding: 2px 5px 4px; font-size: 20px; color: var(--bone);
+  background: var(--deep); border: 1px solid var(--bone-dim);
+  box-shadow: 0 0 calc(4px + var(--glow) * 22px) calc(var(--glow) * 6px) rgba(236, 229, 211, calc(.15 + var(--glow) * .6));
+  filter: brightness(calc(1 + var(--glow) * .5));
+}
 .scroll b { font-weight: 400; }
 .scroll i { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--bone); }
 .scroll.held { background: var(--cobalt); border-color: var(--bone); }
+.scroll .wing { position: absolute; top: -9px; color: var(--bone); opacity: .9; animation: flap var(--flap, .3s) ease-in-out infinite alternate; }
+.scroll .wing.l { right: 100%; margin-right: -4px; transform-origin: right center; }
+.scroll .wing.r { left: 100%; margin-left: -4px; transform-origin: left center; }
+.scroll .wing.r svg { transform: scaleX(-1); }
+@keyframes flap { from { transform: rotate(14deg) scaleY(1); } to { transform: rotate(-22deg) scaleY(.7); } }
+.seg em { position: absolute; left: 8px; bottom: 6px; font-style: normal; font-size: 10px; letter-spacing: .14em; color: var(--bone-faint); opacity: 0; transition: opacity .3s; }
+.seg.here:not(.used) em { opacity: 1; }
 @keyframes caught { to { opacity: 0; transform: scale(2.4); } }
 
 /* Evocatio — kruk ASCII */

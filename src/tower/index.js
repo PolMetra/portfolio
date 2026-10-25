@@ -77,7 +77,8 @@ export class Tower {
 
     // postęp
     this.progress = this.load();
-    this.caught = new Set(this.progress.caught || []);
+    // odfiltruj zwoje, których już nie ma (np. po skróceniu listy umiejętności)
+    this.caught = new Set((this.progress.caught || []).filter((i) => i < config.skills.length));
     this.revealed = new Set(this.progress.revealed || []);
 
     // wejście
@@ -386,8 +387,8 @@ export class Tower {
     }
     const r = replay ? await this.dialog.say([{ text: 'Dobrze, wypuszczam zwoje z powrotem. Rozmnóż się, ręko!', mood: 'cast' }]) : await this.dialog.say([
       { text: 'Zwoje z wiedzą mistrza są płochliwe. Uciekają przed każdą ręką.', mood: 'idle' },
-      { text: 'Rzucę na ciebie czar mnożenia. Każde kliknięcie stworzy kopię twojej ręki w innym polu. Kopia powtarza twoje ruchy, z lekkim opóźnieniem.', mood: 'cast' },
-      { text: 'Zwoje uciekają przed prawdziwą ręką. Złapiesz je tylko kopią, przytrzymując ją nad zwojem przez chwilę. Kopie słabną i znikają, więc klikaj z głową.', mood: 'point' },
+      { text: 'Rzucę na ciebie czar mnożenia. Kliknij w dowolne pole, a pojawi się w nim kopia twojej ręki. Gdy przejdziesz do innego pola, kopia będzie powtarzać twoje ruchy w swoim.', mood: 'cast' },
+      { text: 'Zwoje uciekają przed prawdziwą ręką. Postaw kopię w polu ze zwojem, wróć do innego pola i naprowadź ją na zwój.', mood: 'point' },
     ]);
     if (r === CANCEL || this.mode !== 'multi') return;
     this.audio.thunder(0.5);
@@ -395,7 +396,7 @@ export class Tower {
     document.body.classList.add('no-cursor');
     this.replay = replay;
     this.game.start(replay ? new Set() : this.caught);
-    this.dialog.line({ text: 'Rozmnóż się, ręko! Kliknij, by rozmnożyć kursor, i przytrzymaj kopię nad zwojem.', hold: true, mood: 'cast' });
+    this.dialog.line({ text: 'Rozmnóż się, ręko! Kliknij w pole ze zwojem, potem przejdź do innego pola i naprowadź kopię.', hold: true, mood: 'cast' });
   }
 
   onScroll(i) {

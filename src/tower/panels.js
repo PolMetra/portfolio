@@ -63,7 +63,7 @@ export function skillsHTML(skills, caught) {
       const bar = '/'.repeat(s.level * 4) + '·'.repeat((5 - s.level) * 4);
       return `<div class="sk ${got ? 'got' : ''}">
         <div class="sk-top"><span class="sk-n">${got ? esc(s.name) : '⠿⠿⠿⠿⠿⠿⠿⠿'}</span><span class="sk-b">${got ? `[${bar}]` : '[····················]'}</span></div>
-        <div class="sk-note">${got ? esc(s.note) : 'zapieczętowane'}</div>
+        <div class="sk-note">${got ? `${s.label ? `<b>${esc(s.label)}</b> · ` : ''}${esc(s.note)}` : 'zapieczętowane'}</div>
       </div>`;
     }).join('')}</div>`;
 }

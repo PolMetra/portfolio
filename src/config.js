@@ -91,14 +91,11 @@ export const CONFIG = {
   //  UMIEJĘTNOŚCI — Multiplikacja (rozdział IV); level 1–5
   // ==========================================================
   skills: [
-    { name: 'Blender', level: 5, note: 'modelowanie, sculpt, Cycles' },
-    { name: 'ZBrush', level: 4, note: 'sculpt postaci i stworów' },
-    { name: 'Substance Painter', level: 4, note: 'materiały PBR, maski' },
-    { name: 'Substance Designer', level: 2, note: 'proceduralne materiały' },
-    { name: 'Unreal Engine 5', level: 3, note: 'oświetlenie, Lumen, Nanite' },
-    { name: 'Marmoset Toolbag', level: 3, note: 'prezentacja, bake' },
-    { name: 'Retopologia i UV', level: 4, note: 'pod animację i gry' },
-    { name: 'Photoshop', level: 3, note: 'concepty, paintover' },
+    // level 1–5 (pasek), label = opis poziomu wyświetlany obok
+    { name: 'Blender', level: 3, label: 'średnio zaawansowany', note: 'modelowanie, sculpt, rendering' },
+    { name: 'Substance Painter', level: 3, label: 'średni', note: 'teksturowanie, materiały PBR' },
+    { name: 'Godot', level: 3, label: 'średni', note: 'prototypy własnych gier' },
+    { name: 'Unreal Engine', level: 3, label: 'średni', note: 'sceny, oświetlenie, prezentacja' },
   ],
 
   // ==========================================================
