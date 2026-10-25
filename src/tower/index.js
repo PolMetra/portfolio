@@ -5,6 +5,7 @@ import { Panel, projectHTML, skillsHTML, aboutHTML, contactHTML } from './panels
 import { MultiplyGame } from './multiply.js';
 import { Raven } from './raven.js';
 import { Dialog } from '../ui/dialog.js';
+import { IlluminatedFrame } from '../ui/frame.js';
 
 const CANCEL = Dialog.CANCEL;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -14,6 +15,7 @@ const PROGRESS = 'arkanus.tower';
 // ============================================================
 //  WNĘTRZE WIEŻY — księga czarów i rozdziały II–VI
 // ============================================================
+
 export class Tower {
   constructor({ renderer, post, dialog, wizard, hud, audio, config, onExit }) {
     Object.assign(this, { renderer, post, dialog, wizard, hud, audio, config, onExit });
@@ -56,6 +58,7 @@ export class Tower {
     // DOM
     this.panel = new Panel(document.getElementById('panel'));
     this.book = document.getElementById('book');
+    this.bookFrame = new IlluminatedFrame(this.book, { band: 40, bandMobile: 24, seed: 9, sideShields: true });
     this.ballnav = document.getElementById('ballnav');
     this.tip = document.getElementById('tip');
     this.layer = document.getElementById('game');
@@ -228,6 +231,7 @@ export class Tower {
     this.goal = this.stations.hub;
     this.renderBook();
     this.book.classList.add('open');
+    if (!this.bookFrame.shown) this.bookFrame.reveal(1.6);
     this.hud.setChapter('KSIĘGA CZARÓW');
     // przy otwartej księdze dialog chowamy (nachodziłby na listę rozdziałów), podpowiedź jest w samej księdze
     this.dialog.close();

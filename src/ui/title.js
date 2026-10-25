@@ -1,4 +1,5 @@
 import { bandOrnament, flipBraille, revealBraille } from './braille.js';
+import { IlluminatedFrame } from './frame.js';
 
 // Strona tytułowa księgi: drzeworytowy inicjał, gotyckie "Portfolio",
 // imię, rok rzymskimi cyframi i wici z kropek brajla.
@@ -25,6 +26,7 @@ export class Title {
     this.ornBot = root.querySelector('.orn-bot');
     this.band = titleBand || bandOrnament(44, 4);
     this.bandFlip = titleBand ? flipBraille(titleBand) : bandOrnament(44, 4, true);
+    this.frame = new IlluminatedFrame(root.querySelector('.page'), { band: 46, bandMobile: 28, seed: 3 });
     this.shown = false;
   }
 
@@ -32,6 +34,7 @@ export class Title {
     if (this.shown) return;
     this.shown = true;
     this.root.classList.add('show');
+    this.frame.reveal(2.4);
     revealBraille(this.ornTop, this.band, 1.8);
     setTimeout(() => revealBraille(this.ornBot, this.bandFlip, 1.8), 1600);
   }
@@ -39,6 +42,7 @@ export class Title {
   showInstant() {
     this.shown = true;
     this.root.classList.add('show', 'instant');
+    this.frame.showInstant();
     this.ornTop.textContent = this.band.join('\n');
     this.ornBot.textContent = this.bandFlip.join('\n');
   }

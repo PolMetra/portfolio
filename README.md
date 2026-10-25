@@ -30,6 +30,7 @@ Strona będzie pod `https://<użytkownik>.github.io/portfolio/`.
 | Komnata wieży (3D) | `src/tower/room.js` |
 | Czarodziej (bryła 3D przeliczana na znaki) | `src/ui/wizard.js` |
 | Strona tytułowa księgi | `index.html` (#title), `src/ui/title.js` |
+| Iluminowane ramy z tarczami AJ (strona tytułowa, księga czarów) | `src/ui/frame.js` (grubość pasa: `band`, wzór: `seed`) |
 | Ornamenty z kropek brajla | `src/ui/braille.js` (generator), `src/ui/ornaments.js` (własne wzory) |
 | Kuźnia Ornamentów: rysowanie ornamentów z lustrem | `tools/ornament.html` (otwórz w przeglądarce, skopiuj tablicę JS do `src/ui/ornaments.js`) |
 | Nakładki techniczne (dane burzy, dziennik) | `src/ui/hud.js` |
