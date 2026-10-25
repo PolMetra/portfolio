@@ -5,4 +5,10 @@
 export const titleBand = null;
 
 // wić na ekranie startowym „Protokół M3rlin”
-export const bootBand = null;
+export const bootBand = export const titleBand = [
+  '⢀⡀⠀⠻⣝⣲⣄⣀⣀⠀⢀⡤⢽⣯⠽⣦⠴⠒⠒⠦⣾⠃⠘⣷⠴⠒⠒⠦⣴⠯⣽⡯⢤⡀⠀⣀⣀⣠⣖⣫⠟⠀⢀⡀',
+  '⠙⠿⡷⠚⠙⢻⡏⢁⠈⢳⡏⣴⠂⢸⢰⠃⠀⡔⢉⠙⡎⢳⡞⢱⠋⡉⢢⠀⠘⡆⡇⠐⣦⢹⡞⠁⡈⢹⡟⠋⠓⢾⠿⠋',
+  '⡽⠾⡇⠐⣆⣽⡇⢹⡧⠞⠳⣌⣙⣁⣞⣀⡀⢧⡘⠚⣁⠞⠳⣈⠓⢃⡼⢀⣀⣳⣈⣋⣡⠞⠳⢼⡏⢸⣯⣰⠂⢸⠷⢯',
+  '⣴⡿⠓⢤⣀⣀⡽⠾⢤⣴⡞⠁⠀⠀⠙⠦⣉⣳⡍⠉⠙⠷⠾⠋⠉⢩⣞⣉⠴⠋⠀⠀⠈⢳⣦⡤⠷⢯⣀⣀⡤⠚⢿⣦',
+];
+;
