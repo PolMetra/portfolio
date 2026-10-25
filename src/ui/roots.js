@@ -6,7 +6,8 @@
 import { canvasToBraille } from './braille.js';
 
 const BLANK = '⠀';
-const COLS = 44, ROWS = 17;
+const ROWS = 17;
+let COLS = 44; // nadpisywane szerokością napisu (start({ width }))
 const GROW_START = 0.7, SPEED = 0.62; // start korzeni (s), prędkość wzrostu (wysokości kadru na sekundę)
 
 function rng(seed) {
@@ -50,7 +51,10 @@ export class CrystalRoots {
   setup() {
     const { cw, ch } = this.measure();
     this.cw = cw; this.ch = ch;
+    if (this.width) COLS = Math.max(30, Math.floor(this.width / cw));
     const Wp = COLS * cw, Hp = ROWS * ch, u = Hp, cx = Wp / 2;
+    const spread = Math.max(1, Wp / u / 1.55); // szerszy kadr = dłuższe korzenie przy ziemi
+    this.spread = spread;
     this.Wp = Wp; this.Hp = Hp; this.u = u;
     const mk = () => {
       const c = document.createElement('canvas');
@@ -89,12 +93,15 @@ export class CrystalRoots {
       const steps = Math.round(len / 2.5);
       for (let i = 0; i < steps; i++) {
         a += (R() - 0.5) * 0.5;
+        // korzenie trzymają się ziemi: ciągnie je w bok i lekko w dół
+        const goal = Math.cos(a) >= 0 ? 0.3 : Math.PI - 0.3;
+        if (y < 0.86 * u) a += (goal - a) * 0.12;
         if (y > Hp - 4) a += (Math.cos(a) >= 0 ? -1 : 1) * 0.25 * Math.sign(Math.sin(a)); // przy dnie skręca w bok
         x += Math.cos(a) * 2.5; y += Math.sin(a) * 2.5;
         y = Math.min(y, Hp - 1.5);
         if (x < 2 || x > Wp - 2) break;
         pts.push([x, y]);
-        if (depth < 2 && i > 4 && R() < 0.07) {
+        if (depth < 2 && i > 4 && R() < 0.07 / this.spread) {
           const s = R() < 0.5 ? -1 : 1;
           walk(x, y, a + s * (0.5 + R() * 0.5), len * (0.35 + R() * 0.3), t0 + (i * 2.5) / (SPEED * u), Math.max(1, width * 0.7), depth + 1);
         }
@@ -102,10 +109,12 @@ export class CrystalRoots {
       add(pts, t0, width);
     };
     const n = 7;
-    for (let i = 0; i < n; i++) {
+    // lewa połowa i środek, prawa to lustrzane odbicie (równowaga kadru)
+    for (let i = 0; i <= (n - 1) / 2; i++) {
       const k = i / (n - 1) - 0.5;
-      walk(cx + k * 0.06 * u, 0.8 * u, Math.PI / 2 - k * 2.6, u * (0.5 + R() * 0.5), GROW_START + R() * 0.25, 1.5, 0);
+      walk(cx + k * 0.06 * u, 0.8 * u, Math.PI / 2 - k * 2.6, u * (0.5 + R() * 0.5) * (Math.abs(k) > 0.2 ? spread * 1.3 : 1), GROW_START + R() * 0.25, Math.abs(k) > 0.2 ? 1.2 : 1.5, 0);
     }
+    for (const p of paths.slice()) paths.push({ ...p, pts: p.pts.map(([x, y]) => [2 * cx - x, y]) });
 
     // 2) korzenie pnące: z ziemi do krawędzi kryształu i w górę, z falowaniem przez krawędź
     const o = this.crystal.outline;
@@ -222,7 +231,8 @@ export class CrystalRoots {
     this.crystalPre.textContent = edge.map((r, y) => [...r].map((ch, x) => (ch !== BLANK ? ch : roots[y][x] !== BLANK ? BLANK : glow[y][x])).join('')).join('\n');
   }
 
-  start() {
+  start({ width } = {}) {
+    this.width = width;
     this.setup();
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) { this.frame(this.growEnd + 1); return this; }

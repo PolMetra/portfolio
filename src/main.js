@@ -457,20 +457,15 @@ function bootTitle() {
     return { lines, pitch: Math.max(4, Math.min(9, Math.floor(room / cols))) };
   };
   let f = fit();
-  const t0 = performance.now();
-  const draw = () => {
-    const k = Math.min(1, (performance.now() - t0) / 900);
-    drawDotText(cv, f.lines, { pitch: f.pitch, color: '#ece5d3', shadow: '#0b1d73', k: smooth(k) });
-    if (k < 1) requestAnimationFrame(draw);
-  };
-  draw();
+  const { w } = drawDotText(cv, f.lines, { pitch: f.pitch, color: '#ece5d3', shadow: '#0b1d73' });
   addEventListener('resize', () => { if (!boot.isConnected) return; f = fit(); drawDotText(cv, f.lines, { pitch: f.pitch, color: '#ece5d3', shadow: '#0b1d73' }); });
+  return w;
 }
 
 async function bootSequence() {
   const out = boot.querySelector('.boot-log');
-  new CrystalRoots(boot.querySelector('.boot-roots')).start();
-  bootTitle();
+  const titleW = bootTitle();
+  new CrystalRoots(boot.querySelector('.boot-roots')).start({ width: titleW });
   await wait(0.5);
   // konsola: polecenia wpisywane znak po znaku, potem wynik
   const cmds = [
