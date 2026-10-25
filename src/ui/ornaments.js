@@ -2,7 +2,13 @@
 // Wklej tu skopiowaną tablicę JS. null = ornament generowany automatycznie.
 
 // wić na stronie tytułowej (dolna powstaje sama jako odbicie górnej)
-export const titleBand = null;
+export const titleBand = export const titleBand = [
+  '⣚⠉⠙⠫⢍⠉⠓⢦⣴⠲⡒⢗⡒⢶⣾⡙⠫⣹⡵⣫⣽⣿⣿⣯⣝⢮⣏⠝⢋⣷⡶⢒⡺⢒⠖⣦⡴⠚⠉⡩⠝⠋⠉⣓',
+  '⠈⠑⠲⠤⠤⠭⠶⠖⠛⠳⢼⣄⣈⣢⣉⣻⣷⣌⣷⣿⡅⠉⠉⢨⣿⣾⣡⣾⣟⣉⣔⣁⣠⡧⠞⠛⠲⠶⠭⠤⠤⠖⠊⠁',
+  '⢀⡠⠴⠒⠒⣒⠶⠦⣤⡴⢺⠋⢉⠝⣉⣽⡿⢋⡿⣿⡃⣀⣀⢘⣿⢿⡙⢿⣯⣉⠫⡉⠙⡗⢦⣤⠴⠶⣒⠒⠒⠦⢄⡀',
+  '⢭⣀⣠⣔⣊⣀⡤⠞⠻⠴⠥⡮⠥⠾⢿⣡⣔⣹⡳⣝⣻⣿⣿⣟⣫⢞⣏⣢⣌⡿⠷⠬⢵⠬⠦⠟⠳⢤⣀⣑⣢⣄⣀⡭',
+];
+;
 
 // wić na ekranie startowym „Protokół M3rlin”
 export const bootBand = export const titleBand = [
