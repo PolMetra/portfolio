@@ -1,5 +1,4 @@
 import { bandOrnament, flipBraille, revealBraille } from './braille.js';
-import { titleBand } from './ornaments.js';
 
 // Strona tytułowa księgi: drzeworytowy inicjał, gotyckie "Portfolio",
 // imię, rok rzymskimi cyframi i wici z kropek brajla.
@@ -17,7 +16,7 @@ function titleCase(s) {
 }
 
 export class Title {
-  constructor(root, config) {
+  constructor(root, config, titleBand = null) {
     this.root = root;
     root.querySelector('.t-name').textContent = titleCase(config.name);
     root.querySelector('.t-role').textContent = config.role;

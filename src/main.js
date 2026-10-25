@@ -13,7 +13,11 @@ const CANCEL = Dialog.CANCEL;
 import { Title } from './ui/title.js';
 import { Hud } from './ui/hud.js';
 import { bandOrnament, revealBraille } from './ui/braille.js';
-import { bootBand } from './ui/ornaments.js';
+// własne ornamenty wczytujemy osobno: błąd w ornaments.js nie może zatrzymać strony
+const ORN = await import('./ui/ornaments.js?v=3').catch((e) => { console.warn('ornaments.js: błąd, używam ornamentów domyślnych.', e); return {}; });
+const okBand = (b) => Array.isArray(b) && b.length > 0 && b.every((l) => typeof l === 'string') ? b : null;
+const bootBand = okBand(ORN.bootBand);
+const titleBand = okBand(ORN.titleBand);
 import { Tower } from './tower/index.js';
 
 // ============================================================
@@ -88,7 +92,7 @@ document.querySelector('.dlg-who').textContent = CONFIG.wizardName.toUpperCase()
 const hud = new Hud();
 
 const dialog = new Dialog(document.getElementById('dialog'), wizard);
-const title = new Title(document.getElementById('title'), CONFIG);
+const title = new Title(document.getElementById('title'), CONFIG, titleBand);
 const fade = document.getElementById('fade');
 let mode = 'storm'; // storm | tower
 const tower = new Tower({
