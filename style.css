@@ -213,15 +213,24 @@ body.live #wizard { opacity: 1; }
   cursor: pointer; transition: opacity .9s;
 }
 #boot.gone { opacity: 0; pointer-events: none; }
-.boot-roots { position: relative; }
-.boot-roots pre { margin: 0; font-family: var(--ascii); font-size: 13px; line-height: 1; white-space: pre; }
-.br-roots { color: var(--ink); opacity: .9; }
+.boot-wrap { width: min(740px, calc(100vw - 32px)); display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.boot-roots { position: relative; align-self: center; }
+.boot-roots pre { margin: 0; font-family: var(--ascii); font-size: 15px; line-height: 1; white-space: pre; }
+.br-roots { color: var(--ink); }
 .br-crystal { position: absolute; inset: 0; color: var(--bone); text-shadow: 0 0 6px rgba(236, 229, 211, .55), 0 0 16px rgba(95, 126, 230, .9); }
-.boot-title { font-family: 'Grenze', serif; font-weight: 600; font-size: clamp(44px, 6vw, 80px); color: var(--bone); text-shadow: 3px 3px 0 var(--deep); }
-.boot-log { margin: 0; min-height: 7.5em; min-width: 340px; font-size: 12px; line-height: 1.55; letter-spacing: .08em; color: var(--bone-dim); }
-.boot-start { opacity: 0; font-size: 13px; letter-spacing: .3em; color: var(--bone); text-align: center; }
-.boot-start small { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .2em; color: var(--bone-dim); }
-#boot.ready .boot-start { opacity: 1; animation: blink 1.2s steps(2) infinite; }
+.boot-title { margin: 0; line-height: 0; }
+.boot-dots { display: block; max-width: 100%; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.boot-con { width: 100%; font-family: var(--mono); color: var(--bone-dim); border-top: 1px solid rgba(236, 229, 211, .35); padding-top: 10px; }
+.boot-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 11px; letter-spacing: .18em; color: rgba(236, 229, 211, .5); margin-bottom: 10px; }
+.boot-log { margin: 0; min-height: 7.6em; font-family: var(--mono); font-size: 13px; line-height: 1.6; letter-spacing: .04em; color: var(--bone-dim); white-space: pre-wrap; }
+.boot-log .p, .bp { color: rgba(236, 229, 211, .5); }
+.boot-log .c { color: var(--bone); }
+.boot-log .ok { color: var(--bone); }
+.boot-start { opacity: 0; margin-top: 2px; font-size: 13px; line-height: 1.6; letter-spacing: .04em; color: var(--bone); transition: opacity .3s; }
+.boot-start small { display: block; margin-top: 10px; font-size: 10px; letter-spacing: .2em; color: rgba(236, 229, 211, .5); }
+.cur { display: inline-block; width: .62em; height: 1.1em; margin-left: 3px; vertical-align: -.2em; background: var(--bone); animation: blink 1s steps(2) infinite; }
+#boot.ready .boot-start { opacity: 1; }
 
 @keyframes blink { 50% { opacity: .25; } }
 
@@ -243,15 +252,15 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
 
 /* Księga czarów */
 #book {
-  position: fixed; z-index: 32; left: 50%; top: 3vh; transform: translate(-50%, 10px);
-  width: min(700px, calc(100vw - 20px)); padding: 22px 30px 18px;
+  position: fixed; z-index: 32; left: 50%; top: 9vh; transform: translate(-50%, 10px);
+  width: min(620px, calc(100vw - 28px)); padding: 22px 30px 18px;
   background: rgba(5, 8, 23, .62);
   border: 1px solid var(--bone-dim); outline: 1px solid var(--bone-faint); outline-offset: -6px;
   opacity: 0; pointer-events: none; transition: opacity .4s, transform .4s;
 }
 #book.open { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
 .bk-head { font-family: 'Fell', serif; text-align: center; font-size: 17px; letter-spacing: .34em; color: var(--bone); }
-.bk-sub { text-align: center; font-family: 'Grenze', serif; font-size: 19px; color: var(--bone-dim); margin: 2px 0 12px; }
+.bk-sub { text-align: center; font-family: 'Grenze', serif; font-size: 19px; color: var(--bone-dim); margin: 2px 0 16px; }
 .spells { list-style: none; margin: 0; padding: 0; }
 .spell {
   display: flex; align-items: baseline; gap: 10px; padding: 9px 8px; cursor: pointer;
@@ -446,10 +455,10 @@ body.calm #tower-nav { opacity: 0 !important; pointer-events: none !important; }
 #ballnav .bn-book { top: calc(100% + 12px); }
 
 /* księga: rozdziały wyglądają jak przyciski */
-#book .spells { display: flex; flex-direction: column; gap: 6px; }
+#book .spells { display: flex; flex-direction: column; gap: 8px; }
 #book .spell {
   display: grid; grid-template-columns: 2.6em 1fr auto; grid-template-rows: auto auto; column-gap: 12px; align-items: center;
-  border: 1px solid rgba(236, 229, 211, .28); padding: 7px 14px; background: none; transition: background .2s, border-color .2s;
+  border: 1px solid rgba(236, 229, 211, .28); padding: 10px 14px; background: none; transition: background .2s, border-color .2s;
 }
 #book .spell:hover, #book .spell:focus-visible { background: rgba(236, 229, 211, .1); border-color: rgba(236, 229, 211, .7); color: var(--bone); }
 #book .spell:hover .sp-pl, #book .spell:focus-visible .sp-pl { color: var(--bone-dim); }
@@ -495,15 +504,16 @@ body.calm #tower-nav { opacity: 0 !important; pointer-events: none !important; }
   #wizard .field { display: none; }
   #dialog { left: 14px; right: 14px; width: auto; bottom: 3vh; }
   .dlg-text { font-size: 15px; min-height: 4.5em; }
-  .boot-log { min-width: 0; font-size: 10px; }
+  .boot-log, .boot-start { font-size: 11px; }
   .boot-roots pre { font-size: 9px; }
+  .boot-wrap { gap: 12px; }
 }
 
 @media (max-width: 760px) {
   body.in-tower #wizard, body.in-tower #hud-stats { display: none; }
   body.in-tower #dialog { top: 54px; bottom: auto; left: 14px; right: 14px; width: auto; }
   body.in-tower .dlg-text { min-height: 0; }
-  #book { top: auto; bottom: 24px; padding: 16px 14px 12px; }
+  #book { top: auto; bottom: 14px; padding: 16px 14px 12px; }
   .sp-name { font-size: 21px; }
   .sp-pl { white-space: normal; font-size: 10px; text-align: right; }
   .sp-dots { display: none; }
@@ -519,5 +529,5 @@ body.calm #tower-nav { opacity: 0 !important; pointer-events: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #call.show, .dlg-next, #boot.ready .boot-start { animation: none; }
+  #call.show, .dlg-next, .cur { animation: none; }
 }

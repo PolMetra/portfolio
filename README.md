@@ -30,8 +30,10 @@ Strona będzie pod `https://<użytkownik>.github.io/portfolio/`.
 | Komnata wieży (3D) | `src/tower/room.js` |
 | Czarodziej (bryła 3D przeliczana na znaki) | `src/ui/wizard.js` |
 | Strona tytułowa księgi | `index.html` (#title), `src/ui/title.js` |
-| Iluminowane ramy (strona tytułowa, księga czarów) | `src/ui/frame.js` (grubość pasa: `band`, wzór: `seed`, tarcze AJ: `shields: true`) |
+| Iluminowana rama strony tytułowej | `src/ui/frame.js` (grubość pasa: `band`, wzór: `seed`, tarcze AJ: `shields: true`) |
 | Animacja kryształu obrastanego korzeniami (ekran startowy) | `src/ui/roots.js` |
+| Kropkowy krój napisu „Protokół M3rlin” (nowe litery: tablica `G`) | `src/ui/dotfont.js` |
+| Polecenia w konsoli startowej | `src/main.js` → `bootSequence()` |
 | Ornamenty z kropek brajla | `src/ui/braille.js` (generator), `src/ui/ornaments.js` (własne wzory) |
 | Kuźnia Ornamentów: rysowanie ornamentów z lustrem | `tools/ornament.html` (otwórz w przeglądarce, skopiuj tablicę JS do `src/ui/ornaments.js`) |
 | Nakładki techniczne (dane burzy, dziennik) | `src/ui/hud.js` |

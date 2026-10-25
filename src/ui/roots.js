@@ -6,7 +6,7 @@
 import { canvasToBraille } from './braille.js';
 
 const BLANK = '⠀';
-const COLS = 36, ROWS = 15;
+const COLS = 44, ROWS = 17;
 const GROW_START = 0.7, SPEED = 0.62; // start korzeni (s), prędkość wzrostu (wysokości kadru na sekundę)
 
 function rng(seed) {
@@ -96,7 +96,7 @@ export class CrystalRoots {
         pts.push([x, y]);
         if (depth < 2 && i > 4 && R() < 0.07) {
           const s = R() < 0.5 ? -1 : 1;
-          walk(x, y, a + s * (0.5 + R() * 0.5), len * (0.35 + R() * 0.3), t0 + (i * 2.5) / (SPEED * u), Math.max(0.7, width * 0.7), depth + 1);
+          walk(x, y, a + s * (0.5 + R() * 0.5), len * (0.35 + R() * 0.3), t0 + (i * 2.5) / (SPEED * u), Math.max(1, width * 0.7), depth + 1);
         }
       }
       add(pts, t0, width);
@@ -104,7 +104,7 @@ export class CrystalRoots {
     const n = 7;
     for (let i = 0; i < n; i++) {
       const k = i / (n - 1) - 0.5;
-      walk(cx + k * 0.06 * u, 0.8 * u, Math.PI / 2 - k * 2.6, u * (0.45 + R() * 0.45), GROW_START + R() * 0.25, 1, 0);
+      walk(cx + k * 0.06 * u, 0.8 * u, Math.PI / 2 - k * 2.6, u * (0.5 + R() * 0.5), GROW_START + R() * 0.25, 1.5, 0);
     }
 
     // 2) korzenie pnące: z ziemi do krawędzi kryształu i w górę, z falowaniem przez krawędź
@@ -120,7 +120,7 @@ export class CrystalRoots {
         const wob = (Math.sin(i * 0.16 + phase) * 0.055 + s * 0.02) * u * ramp; // falą przechodzi przez krawędź
         return [x + wob, y];
       });
-      add(pts, t0, 0.85);
+      add(pts, t0, 1.25);
       // zawijasy i odnóżki przerastające ścianę kryształu
       const tt = (i) => t0 + (i * 1.5) / (SPEED * u);
       for (let j = 0; j < 3; j++) {
@@ -134,11 +134,11 @@ export class CrystalRoots {
           const rr = r * (1 - kk * 0.8);
           curl.push([x - s * r + Math.cos(a) * rr * -s, y + Math.sin(a) * rr]);
         }
-        add([[x, y], ...curl], tt(i), 0.7);
+        add([[x, y], ...curl], tt(i), 1);
         if (j === 1) {
           // odnóżka w poprzek ściany
           const dx = -s * (0.16 + R() * 0.08) * u;
-          add([[x, y], [x + dx * 0.5, y - 0.03 * u], [x + dx, y + 0.02 * u]], tt(i) + 0.1, 0.7);
+          add([[x, y], [x + dx * 0.5, y - 0.03 * u], [x + dx, y + 0.02 * u]], tt(i) + 0.1, 1);
         }
       }
     };
@@ -203,7 +203,7 @@ export class CrystalRoots {
     for (const p of this.paths) {
       const m = Math.min(p.pts.length, Math.floor((t - p.t0) / per));
       if (m < 2) continue;
-      c.lineWidth = this.dot * 0.8 * p.width;
+      c.lineWidth = this.dot * 1.15 * p.width;
       c.beginPath();
       for (let i = 0; i < m; i++) i ? c.lineTo(p.pts[i][0], p.pts[i][1]) : c.moveTo(p.pts[i][0], p.pts[i][1]);
       c.stroke();

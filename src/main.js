@@ -13,6 +13,7 @@ const CANCEL = Dialog.CANCEL;
 import { Title } from './ui/title.js';
 import { Hud } from './ui/hud.js';
 import { CrystalRoots } from './ui/roots.js';
+import { drawDotText, layoutDots } from './ui/dotfont.js';
 import { Tower } from './tower/index.js';
 
 // ============================================================
@@ -443,20 +444,53 @@ function ambientStorm(dt) {
 function smooth(x) { return x * x * (3 - 2 * x); }
 function wait(s) { return new Promise((r) => setTimeout(r, s * 1000)); }
 
+// napis z kropek: jedna linia, a gdy się nie mieści, dwie
+function bootTitle() {
+  const cv = boot.querySelector('.boot-dots');
+  const wrap = boot.querySelector('.boot-wrap');
+  const name = `PROTOKÓŁ ${W.toUpperCase()}`;
+  const fit = () => {
+    const room = wrap.clientWidth - 8;
+    const one = layoutDots(name).cols;
+    const lines = room / one >= 6 ? [name] : name.split(' ');
+    const cols = Math.max(...lines.map((l) => layoutDots(l).cols));
+    return { lines, pitch: Math.max(4, Math.min(9, Math.floor(room / cols))) };
+  };
+  let f = fit();
+  const t0 = performance.now();
+  const draw = () => {
+    const k = Math.min(1, (performance.now() - t0) / 900);
+    drawDotText(cv, f.lines, { pitch: f.pitch, color: '#ece5d3', shadow: '#0b1d73', k: smooth(k) });
+    if (k < 1) requestAnimationFrame(draw);
+  };
+  draw();
+  addEventListener('resize', () => { if (!boot.isConnected) return; f = fit(); drawDotText(cv, f.lines, { pitch: f.pitch, color: '#ece5d3', shadow: '#0b1d73' }); });
+}
+
 async function bootSequence() {
   const out = boot.querySelector('.boot-log');
   new CrystalRoots(boot.querySelector('.boot-roots')).start();
-  const lines = [
-    `PROTOKÓŁ ${W.toUpperCase()} · v1.0`,
-    '────────────────────────────────',
-    'PERGAMIN .................... OK',
-    'CHMURY PRZYGNANE ............ OK',
-    'MORZE WZBURZONE ............. OK',
-    `CZARODZIEJ ${W.toUpperCase().padEnd(7, ' ')} ........ OBUDZONY`,
+  bootTitle();
+  await wait(0.5);
+  // konsola: polecenia wpisywane znak po znaku, potem wynik
+  const cmds = [
+    ['rozwiń pergamin', 'OK'],
+    ['przygnaj chmury', 'OK'],
+    ['wzburz morze', 'OK'],
+    [`obudź ${W.toLowerCase()}`, 'OBUDZONY'],
   ];
-  for (const l of lines) {
-    out.textContent += l + '\n';
-    await wait(l ? 0.14 : 0.05);
+  const esc = (t) => t.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  let done = '';
+  for (const [cmd, res] of cmds) {
+    for (let i = 1; i <= cmd.length; i++) {
+      out.innerHTML = done + `<span class="p">wieża:~$</span> <span class="c">${esc(cmd.slice(0, i))}</span><span class="cur"></span>`;
+      await wait(0.022);
+    }
+    await wait(0.12);
+    const dots = '.'.repeat(Math.max(3, 24 - cmd.length));
+    done += `<span class="p">wieża:~$</span> <span class="c">${esc(cmd)}</span> ${dots} <span class="ok">${res}</span>\n`;
+    out.innerHTML = done;
+    await wait(0.08);
   }
   boot.classList.add('ready');
   const go = (e) => {
