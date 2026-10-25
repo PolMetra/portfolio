@@ -115,13 +115,14 @@ export class Tower {
 
   renderBook() {
     const list = this.book.querySelector('.spells');
-    list.innerHTML = this.spells().map((s) => `
-      <li class="spell ${s.open ? '' : 'sealed'} ${s.done ? 'done' : ''}" data-id="${s.id}" ${s.open ? 'tabindex="0" role="button"' : 'aria-disabled="true"'}>
+    const spells = this.spells();
+    const next = spells.find((x) => x.open && !x.done); // podpowiedź, co dalej
+    list.innerHTML = spells.map((s, i) => `
+      <li class="spell ${s.open ? '' : 'sealed'} ${s.done ? 'done' : ''} ${s === next ? 'next' : ''}" data-id="${s.id}" ${s.open ? 'tabindex="0" role="button"' : 'aria-disabled="true"'}>
         <span class="sp-num">${s.num}.</span>
         <span class="sp-name">${s.name}</span>
-        <span class="sp-dots"></span>
-        <span class="sp-pl">${s.open ? s.pl : '⠿⠿⠿ zapieczętowane'}</span>
-        <span class="sp-mark">${s.done ? '✓' : s.open ? '›' : '✠'}</span>
+        <span class="sp-pl">${s.open ? s.pl : `zapieczętowane · najpierw rozdział ${spells[i - 1].num}`}</span>
+        <span class="sp-go">${s.open ? (s === next ? 'DALEJ ›' : s.done ? 'OTWÓRZ ›' : 'OTWÓRZ ›') : '✕'}</span>
       </li>`).join('');
     const all = this.spells().every((s) => s.open && s.done);
     this.book.querySelector('[data-act="unseal"]').style.display = all ? 'none' : '';
@@ -137,9 +138,13 @@ export class Tower {
       if (act?.dataset.act === 'unseal') this.unsealAll();
     });
     this.book.addEventListener('keydown', (e) => {
-      if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('spell')) { e.preventDefault(); e.target.click(); }
+      if (!this.book.classList.contains('open')) return;
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('spell')) { e.preventDefault(); e.stopPropagation(); e.target.click(); }
     });
 
+    this.towerNav = document.getElementById('tower-nav');
+    this.towerNav.addEventListener('pointerdown', (e) => e.stopPropagation());
+    this.towerNav.addEventListener('click', () => { this.audio.blip(1.3); this.openBook(); });
     this.ballnav.addEventListener('pointerdown', (e) => e.stopPropagation());
     this.ballnav.addEventListener('click', (e) => {
       const b = e.target.closest('button'); if (!b) return;
@@ -196,6 +201,7 @@ export class Tower {
     this.closeAll();
     this.active = false;
     document.body.classList.remove('in-tower');
+    this.towerNav.classList.remove('show');
     this.post.ps2.uniforms.uTrue.value = 0;
     this.onExit();
   }
@@ -222,7 +228,9 @@ export class Tower {
     this.renderBook();
     this.book.classList.add('open');
     this.hud.setChapter('KSIĘGA CZARÓW');
-    this.dialog.line({ text: 'Wybierz czar z księgi. Zapieczętowane strony otworzą się, gdy opanujesz poprzednie.', hold: true, mood: 'idle' });
+    // przy otwartej księdze dialog chowamy (nachodziłby na listę rozdziałów), podpowiedź jest w samej księdze
+    this.dialog.close();
+    this.book.querySelector('.bk-sub').textContent = 'Kliknij rozdział, aby go otworzyć';
   }
 
   unsealAll() {
@@ -234,10 +242,12 @@ export class Tower {
     this.flash = 0.6;
     this.hud.log('PIECZĘCIE ZDJĘTE');
     this.openBook();
-    this.dialog.line({ text: 'Puff! Wszystkie pieczęcie zdjęte. Każda strona księgi otworzy się od razu.', hold: true, mood: 'cast' });
+    this.book.querySelector('.bk-sub').textContent = 'Wszystkie rozdziały odblokowane. Kliknij, aby otworzyć';
   }
 
   chapter(id) {
+    // zdejmij fokus z przycisku w księdze, inaczej Enter/spacja uruchamiałyby rozdział od nowa zamiast przewijać dialog
+    document.activeElement?.blur?.();
     this.dialog.cancel();
     this.closeAll();
     if (id === 'fulmen') return this.exit();
@@ -292,7 +302,7 @@ export class Tower {
     this.hud.setChapter('ROZDZIAŁ III · ETAPY PRACY');
     this.hud.log(`PROJEKT: ${p.title.toUpperCase()}`);
 
-    this.panel.open('PROJEKT', projectHTML(p, this.current, this.models.length));
+    this.panel.open('PROJEKT', projectHTML(p, this.current, this.models.length), '‹ WRÓĆ DO KULI');
     this.panel.onClose = () => { if (this.mode === 'view') this.backToBall(); };
     const range = this.panel.body.querySelector('.tm-range');
     range.addEventListener('input', () => this.setStage(+range.value));
@@ -492,26 +502,20 @@ export class Tower {
     this.panel.open('KONTAKT', contactHTML(this.config.contact));
     this.panel.onClose = () => { if (this.mode === 'evoc') this.openBook(); };
     // kliknięcie linku: kruk chwyta wiadomość i odlatuje, potem otwiera się link
-    this.panel.body.querySelectorAll('.raven-link').forEach((a) => a.addEventListener('click', async (e) => {
-      e.preventDefault();
+    // link otwiera się od razu w nowej karcie (zwykłe target="_blank" — bez blokady okien),
+    // a kruk w tym czasie odlatuje z wiadomością
+    this.panel.body.querySelectorAll('.raven-link').forEach((a) => a.addEventListener('click', () => {
+      a.blur();
       if (this.sending) return;
       this.sending = true;
-      const url = a.href;
       this.hud.log('KRUK WYSŁANY');
       this.audio.blip(2);
       this.dialog.line({ text: 'Leć, przyjacielu! Wiadomość już w drodze.', hold: true, mood: 'happy' });
-      // przeglądarki pozwalają otworzyć nową kartę tylko chwilę po kliknięciu, więc kruk ma ~1 s na odlot
-      await Promise.race([this.raven.depart(), wait(1.0)]);
-      if (url.startsWith('mailto:')) location.href = url;
-      else {
-        // bez flagi 'noopener' w window.open (z nią przeglądarka zwraca null i nie da się sprawdzić, czy karta się otworzyła)
-        const w = window.open(url, '_blank');
-        if (w) w.opener = null;
-        else location.href = url; // blokada wyskakujących okien: otwórz w tej samej karcie
-      }
-      this.sending = false;
-      // po chwili kruk wraca, gdyby gość chciał wysłać kolejną wiadomość
-      setTimeout(() => { if (this.mode === 'evoc' && !this.raven.active) this.raven.summon(); }, 2500);
+      this.raven.depart().then(() => {
+        this.sending = false;
+        // po chwili kruk wraca, gdyby gość chciał wysłać kolejną wiadomość
+        setTimeout(() => { if (this.mode === 'evoc' && !this.raven.active) this.raven.summon(); }, 2500);
+      });
     }));
   }
 
@@ -687,6 +691,7 @@ export class Tower {
     }
     dp.needsUpdate = true;
 
+    this.towerNav.classList.toggle('show', this.active && this.mode !== 'book' && this.mode !== 'idle');
     this.game.update(dt, t);
     this.raven.update(dt, t);
   }

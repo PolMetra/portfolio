@@ -13,8 +13,9 @@ export class Panel {
     el.querySelector('.pn-close').addEventListener('click', (e) => { e.stopPropagation(); this.close(); });
     el.addEventListener('pointerdown', (e) => e.stopPropagation());
   }
-  open(cap, html) {
+  open(cap, html, back = '‹ WRÓĆ DO KSIĘGI') {
     this.cap.textContent = cap;
+    this.el.querySelector('.pn-close').textContent = back;
     this.body.innerHTML = html;
     this.el.classList.add('open');
     this.body.scrollTop = 0;
@@ -76,6 +77,9 @@ export function aboutHTML(about, revealed) {
 export function contactHTML(c) {
   return `
     <p class="p-desc">Wybierz, dokąd ma polecieć kruk. Zaniesie wiadomość prosto do mnie.</p>
-    ${field('E-MAIL', `<a class="raven-link" href="mailto:${esc(c.email)}">${esc(c.email)}</a>`)}
-    ${c.links.map((l) => field(esc(l.label).toUpperCase(), `<a class="raven-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.url.replace(/^https?:\/\//, ''))} ↗</a>`)).join('')}`;
+    <div class="contact-links">
+      <a class="raven-link" href="mailto:${esc(c.email)}"><span class="cl-l">E-MAIL</span><span class="cl-v">${esc(c.email)}</span><span class="cl-go">✉</span></a>
+      ${c.links.map((l) => `<a class="raven-link" href="${esc(l.url)}" target="_blank" rel="noopener"><span class="cl-l">${esc(l.label).toUpperCase()}</span><span class="cl-v">${esc(l.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</span><span class="cl-go">↗</span></a>`).join('')}
+    </div>
+    <p class="muted">Linki otwierają się w nowej karcie.</p>`;
 }

@@ -63,27 +63,30 @@
   <!-- Księga czarów (hub) -->
   <section id="book" aria-label="Księga czarów">
     <div class="bk-head">KSIĘGA CZARÓW</div>
-    <div class="bk-sub">spis rozdziałów</div>
+    <div class="bk-sub">Kliknij rozdział, aby go otworzyć</div>
     <ol class="spells"></ol>
     <div class="bk-foot">
-      <button data-act="sea">‹ WRÓĆ NA MORZE</button>
-      <button data-act="unseal">ZDEJMIJ WSZYSTKIE PIECZĘCIE</button>
+      <button data-act="sea" class="nav-btn">‹ WRÓĆ NA MORZE</button>
+      <button data-act="unseal" class="nav-btn">ODBLOKUJ WSZYSTKIE ROZDZIAŁY</button>
     </div>
   </section>
 
   <!-- Nawigacja przy kryształowej kuli -->
   <nav id="ballnav" aria-label="Wizje w kuli">
     <button data-b="prev" aria-label="Poprzednia wizja">‹</button>
-    <div class="bn-mid"><div class="bn-title"></div><button data-b="gaze">[ WPATRZ SIĘ ]</button></div>
+    <div class="bn-mid"><div class="bn-title"></div><button data-b="gaze" class="nav-btn nav-main">WPATRZ SIĘ ›</button></div>
     <button data-b="next" aria-label="Następna wizja">›</button>
-    <button data-b="book" class="bn-book">‹ KSIĘGA</button>
+    <button data-b="book" class="bn-book nav-btn">‹ WRÓĆ DO KSIĘGI</button>
   </nav>
 
   <!-- Panel treści (projekt / umiejętności / o mnie / kontakt) -->
   <aside id="panel">
-    <div class="pn-head"><span class="pn-cap"></span><span class="pn-line"></span><button class="pn-close">[ ZAMKNIJ × ]</button></div>
+    <div class="pn-head"><span class="pn-cap"></span><span class="pn-line"></span><button class="pn-close nav-btn">‹ WRÓĆ DO KSIĘGI</button></div>
     <div class="pn-body"></div>
   </aside>
+
+  <!-- stały przycisk w wieży: powrót do księgi z każdego rozdziału -->
+  <button id="tower-nav" class="nav-btn">☰ KSIĘGA CZARÓW</button>
 
   <div id="game" aria-hidden="true"></div>
   <pre id="raven" aria-hidden="true"></pre>

@@ -374,6 +374,77 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
 #tip { position: fixed; left: 0; top: 0; z-index: 36; pointer-events: none; font-size: 11px; letter-spacing: .16em; color: var(--cobalt); background: var(--bone); padding: 3px 6px; opacity: 0; transition: opacity .15s; }
 #tip.show { opacity: 1; }
 
+/* ============ NAWIGACJA: wyraźne przyciski ============ */
+.nav-btn, #panel .pn-close, #book .bk-foot button, #ballnav .bn-book, #ballnav .bn-mid button {
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: .14em; line-height: 1;
+  color: var(--bone); background: rgba(5, 8, 23, .72);
+  border: 1px solid var(--bone); padding: 10px 16px; border-radius: 0;
+  box-shadow: 3px 3px 0 var(--ink); cursor: pointer;
+  transition: background .15s, color .15s, transform .1s, box-shadow .1s;
+}
+.nav-btn:hover, .nav-btn:focus-visible,
+#panel .pn-close:hover, #book .bk-foot button:hover, #ballnav .bn-book:hover, #ballnav .bn-mid button:hover {
+  background: var(--bone); color: var(--cobalt); outline: none; border-bottom-color: var(--bone);
+}
+.nav-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.nav-main, #ballnav .bn-mid button.nav-main { background: var(--bone); color: var(--cobalt); }
+.nav-main:hover, #ballnav .bn-mid button.nav-main:hover { background: var(--sky); color: var(--ink); }
+
+/* stały przycisk "Księga czarów" w wieży */
+#tower-nav { position: fixed; z-index: 41; top: 14px; left: 16px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+#tower-nav.show { opacity: 1; pointer-events: auto; }
+body.calm #tower-nav { opacity: 0 !important; pointer-events: none !important; }
+
+/* panel: przycisk powrotu na górze, dobrze widoczny */
+#panel .pn-head { padding-top: 12px; }
+#panel .pn-line { display: none; }
+#panel .pn-head { flex-wrap: wrap; justify-content: space-between; }
+
+/* kula: większe strzałki w ramkach */
+#ballnav > button[data-b="prev"], #ballnav > button[data-b="next"] {
+  width: 52px; height: 52px; justify-content: center; font-size: 30px; padding: 0;
+  border: 1px solid var(--bone); background: rgba(5, 8, 23, .72); box-shadow: 3px 3px 0 var(--ink);
+}
+#ballnav .bn-mid button { margin-top: 10px; }
+#ballnav .bn-book { top: calc(100% + 16px); }
+
+/* księga: rozdziały wyglądają jak przyciski */
+#book .spells { display: flex; flex-direction: column; gap: 8px; }
+#book .spell {
+  display: grid; grid-template-columns: 2.6em 1fr auto; grid-template-rows: auto auto; column-gap: 12px; align-items: center;
+  border: 1px solid var(--bone-dim); padding: 10px 14px; background: rgba(236, 229, 211, .04);
+}
+#book .spell:last-child { border-bottom: 1px solid var(--bone-dim); }
+#book .sp-num { grid-row: 1 / 3; font-size: 13px; }
+#book .sp-name { grid-column: 2; }
+#book .sp-pl { grid-column: 2; grid-row: 2; font-size: 11px; margin-top: 3px; white-space: normal; text-align: left; }
+#book .sp-go { grid-column: 3; grid-row: 1 / 3; font-size: 12px; letter-spacing: .16em; padding: 7px 10px; border: 1px solid var(--bone-dim); white-space: nowrap; }
+#book .spell:hover .sp-go, #book .spell:focus-visible .sp-go { border-color: var(--cobalt); }
+#book .spell.done .sp-num::after { content: ' ✓'; color: var(--sky); }
+#book .spell.next { border-color: var(--bone); box-shadow: 0 0 0 1px var(--bone), 0 0 18px rgba(236, 229, 211, .25); }
+#book .spell.next .sp-go { background: var(--bone); color: var(--cobalt); border-color: var(--bone); animation: nextpulse 1.6s ease-in-out infinite; }
+#book .spell.next:hover .sp-go { background: var(--cobalt); color: var(--bone); }
+@keyframes nextpulse { 50% { box-shadow: 0 0 0 4px rgba(236, 229, 211, .25); } }
+#book .spell.sealed { border-style: dashed; border-color: var(--bone-faint); background: none; opacity: .7; }
+#book .spell.sealed .sp-go { border-color: transparent; }
+#book .bk-sub { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--bone-dim); margin-bottom: 14px; }
+#book .bk-foot { margin-top: 18px; flex-wrap: wrap; }
+
+/* kontakt: linki jako duże przyciski */
+.contact-links { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 14px; }
+#panel .pn-body a.raven-link {
+  display: grid; grid-template-columns: 7.5em 1fr auto; align-items: center; gap: 10px;
+  padding: 12px 14px; border: 1px solid var(--bone); background: rgba(236, 229, 211, .05);
+  box-shadow: 3px 3px 0 var(--ink); text-decoration: none; color: var(--bone);
+  transition: background .15s, color .15s;
+}
+#panel .pn-body a.raven-link:hover, #panel .pn-body a.raven-link:focus-visible { background: var(--bone); color: var(--cobalt); outline: none; }
+.raven-link .cl-l { font-size: 11px; letter-spacing: .16em; opacity: .8; }
+.raven-link .cl-v { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.raven-link .cl-go { font-size: 16px; }
+
 /* ============ TELEFON ============ */
 @media (max-width: 760px) {
   #hud-log, #hud-foot { display: none; }
@@ -401,6 +472,9 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
   .sp-name { font-size: 21px; }
   .sp-pl { white-space: normal; font-size: 10px; text-align: right; }
   .sp-dots { display: none; }
+  #tower-nav { top: 8px; left: 8px; font-size: 11px; padding: 8px 10px; }
+  #book .spell { padding: 8px 10px; }
+  #panel .pn-close { padding: 8px 12px; font-size: 12px; }
   #panel { top: 50vh; bottom: 0; width: 100vw; padding: 0 16px; background: rgba(5, 8, 23, .88); border-top: 1px solid var(--bone-dim); }
   .p-title { font-size: 30px; }
   #raven { font-size: 5px; }
